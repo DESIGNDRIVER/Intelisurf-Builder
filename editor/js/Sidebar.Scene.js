@@ -4,6 +4,8 @@
 
 Sidebar.Scene = function ( editor ) {
 
+    console.log("Sidebar.Scene.js: Sidebar.Scene");
+
 	var signals = editor.signals;
 
 	var container = new UI.Panel();
@@ -12,8 +14,7 @@ Sidebar.Scene = function ( editor ) {
 	var prevEnvMap = null;
 	var preBackground = null;
 
-	// outliner
-
+	// outliner   
 	function buildOption( object, draggable ) {
 
 		var option = document.createElement( 'div' );
@@ -21,8 +22,7 @@ Sidebar.Scene = function ( editor ) {
 		option.innerHTML = buildHTML( object );
 		option.value = object.id;
 
-		return option;
-
+		return option;      
 	}
 
 	function getMaterialName( material ) {
@@ -80,7 +80,9 @@ Sidebar.Scene = function ( editor ) {
 	var ignoreObjectSelectedSignal = false;
 
 	var outliner = new UI.Outliner( editor );
+
 	outliner.setId( 'outliner' );
+
 	outliner.onChange( function () {
 
 		ignoreObjectSelectedSignal = true;
@@ -90,43 +92,48 @@ Sidebar.Scene = function ( editor ) {
 		ignoreObjectSelectedSignal = false;
 
 	} );
-	outliner.onDblClick( function () {
 
-		editor.focusById( parseInt( outliner.getValue() ) );
-
+	outliner.onDblClick( function () {   
+		editor.focusById( parseInt( outliner.getValue() ) );      
 	} );
+
 	container.add( outliner );
 	container.add( new UI.Break() );
 
-	// background
-
+	// Set Background   
 	var sceneBackgroundRow = new UI.Row();
 	var sceneBackgroundEnabled = new UI.Checkbox( true ).onChange( onBackgroundChanged );
 	var sceneBackground = new UI.Texture( ).onChange( onBackgroundChanged );
-	
-
+	   
 	sceneBackgroundRow.add( new UI.Text( 'Background' ).setWidth( '90px' ) );
 	sceneBackgroundRow.add( sceneBackgroundEnabled );
 	sceneBackgroundRow.add( sceneBackground );
-
-
+   
 	container.add( sceneBackgroundRow );
 
 	function onBackgroundChanged(){
 
+        console.log("Sidebar.Scene.js: onBackgroundChanged");
+
 		var backgroundEnabled = sceneBackgroundEnabled.getValue() === true;
 
 				var newBackground = backgroundEnabled ? sceneBackground.getValue() : null;
-				console.log(newBackground);
+
+                console.log("Sidebar.Scene.js: onBackgroundChanged newBackground");
+                console.log(newBackground);
+
 				if ( preBackground != newBackground ) {
 					editor.scene.background = newBackground;
+
+                    // TODO: Create Sphere Here Instead of Editor Background
 
 					preBackground = newBackground;
 					signals.sceneGraphChanged.dispatch();
 
-				}
-
+                    render();
+				}            
 	}
+
 	// function onBackgroundChanged() {
 
 	// 	signals.sceneBackgroundChanged.dispatch( backgroundColor.getHexValue() );
@@ -158,6 +165,8 @@ Sidebar.Scene = function ( editor ) {
 	container.add( materialEnvMapRow );
 
 	function envMapUpdate(){
+
+        console.log("Sidebar.Scene.js: envMapUpdate");
 
 		var envMapEnabled = materialEnvMapEnabled.getValue() === true;
 
@@ -273,7 +282,10 @@ Sidebar.Scene = function ( editor ) {
 			outliner.setValue( editor.selected.id );
 
 		}
+
+        console.log("Sidebar.Scene.js: refreshUI scene.background");
 		console.log(scene.background);
+
 		// if ( scene.background ) {
 
 		// 	backgroundColor.setHexValue( scene.background.getHex() );
@@ -318,6 +330,7 @@ Sidebar.Scene = function ( editor ) {
 
 	// }
 
+    console.log("Sidebar.Scene.js: call refreshUI");
 	refreshUI();
 
 	// events

@@ -453,15 +453,13 @@ var Viewport = function ( editor ) {
 		render();
 
 	} );
-
-	// // fog
-
-	signals.sceneBackgroundChanged.add( function ( backgroundColor ) {
-
+       
+	signals.sceneBackgroundChanged.add( function ( backgroundColor ) 
+    {
+        console.log("Viewport.js signals.sceneBackgroundChanged");
 		scene.background.setHex( backgroundColor );
 
-		render();
-
+		render();      
 	} );
 
 	// var currentFogType = null;
@@ -510,15 +508,12 @@ var Viewport = function ( editor ) {
 	signals.windowResize.add( function () {
 
 		// TODO: Move this out?
-
-
-
+              
 		aspect = container.dom.offsetWidth / container.dom.offsetHeight;
 		
-		console.log("gethere")
+		console.log("Viewport.js signals.windowResize");
 
-		if (editor.camera instanceof THREE.PerspectiveCamera) {
-
+		if (editor.camera instanceof THREE.PerspectiveCamera) {      
 			editor.DEFAULT_CAMERA.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
 			editor.DEFAULT_CAMERA.updateProjectionMatrix();
 	
@@ -530,11 +525,9 @@ var Viewport = function ( editor ) {
 			// camera.cameraO.right = container.dom.offsetWidth/ 2;
 			// camera.cameraO.top = container.dom.offsetHeight/ 2;
 			// camera.cameraO.bottom = container.dom.offsetHeight / - 2;
-
-			
+            
 			var frustumSize = editor.camera.top*2;
-
-			
+            
 			console.log(frustumSize);
 			editor.camera.left   = -frustumSize * aspect / 2;
 			editor.camera.right  =  frustumSize * aspect / 2;
@@ -543,9 +536,9 @@ var Viewport = function ( editor ) {
 			editor.camera.updateProjectionMatrix();
 
 		}
+
 		renderer.setSize( container.dom.offsetWidth, container.dom.offsetHeight );
 		render();
-
 	} );
 
 	signals.showGridChanged.add( function ( showGrid ) {

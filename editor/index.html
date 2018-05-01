@@ -231,10 +231,10 @@
 					if ( isLoadingFromHash ) return;
 
 					if ( state !== undefined ) {
-
 						editor.fromJSON( state );
-
 					}
+					else
+						editor.clear();
 
 					var selected = editor.config.getKey( 'selected' );
 
