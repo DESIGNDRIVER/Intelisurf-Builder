@@ -223,8 +223,6 @@ Editor.prototype = {
 			
 			//scope.scene.background = texture;
 			//scope.signals.sceneGraphChanged.dispatch();
-			
-			
 		});
 	},
 	
@@ -370,28 +368,45 @@ Editor.prototype = {
 			}
 
 		} );
+		
+		console.log("Editor.js defaultLightSetting count: " + lightCount );
 
 		if( lightCount == 0 ) {
+			
+			this.signals.sceneGraphChanged.active = false;
+
+			console.log("Editor.js defaultLightSetting adding lights" );
+			
 			var color = 0xffffff;
 			var intensity = 1;
 			var light = new THREE.DirectionalLight( color, intensity );
 			light.name = 'DirectionalLight ' + ( ++ lightCount );
 			light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
 			light.position.set( 0, 5000, 5000 );
-			this.execute( new AddObjectCommand( light ) );
+			//this.execute( new AddObjectCommand( light ) );
+			
+			this.addObject( light );
 
 			var light = new THREE.DirectionalLight( color, intensity );
 			light.name = 'DirectionalLight ' + ( ++ lightCount );
 			light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
 			light.position.set( 0, 5000, -5000 );
-			this.execute( new AddObjectCommand( light ) );
+			//this.execute( new AddObjectCommand( light ) );
 
+			this.addObject( light );
 
 			var light = new THREE.AmbientLight( color, intensity );
 			light.name = 'AmbientLight ' + ( ++ lightCount );
 			light.position.set( 0, 5000, 0 );
+			
+			this.addObject( light );
 
-			this.execute( new AddObjectCommand( light ) );         
+			//this.execute( new AddObjectCommand( light ) ); 
+			
+			console.log("Editor.js defaultLightSetting lights added");
+			
+			this.signals.sceneGraphChanged.active = true;
+			this.signals.sceneGraphChanged.dispatch();
 		}
 
 		if( cameraCount == 0 ) {
