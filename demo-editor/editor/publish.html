@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Safetyline Jalousie - Installation Guide</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <!-- <script  src="player.js"></script> -->
+		<script src="js/three.js"></script>
+		<script src="js/Tween.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/PublishPlayer.js"></script>		
+		<script src="js/Animation.js"></script>
+		<script src="js/Animations.js"></script>
+	</head>
+	<body>
+		<div id="container"></div>
+
+        <div id = "inteliContainer">
+            <!-- The user interface layout itself -->
+            <div id="uiContainer">
+                <a href="http://safetylinejalousie.com.au/" target="_blank"><img src="images/safetyline_logo.png" id="safetylineLogo" ></a>
+             
+                <div id="installFrame" class="centredText noselect">
+                    <h3 id="hero">INSTALLATION GUIDE</h3>
+                </div>
+                <!-- <img src="images/VIGNETTE.png" id="vignette"> -->
+                <div id="helpFullPanel" class="noselect">
+                    <img src="images/help_mouse_2.png" id="helpImage" >
+                </div>
+                <div id="menuFullPanel" class="noselect">
+                    <div id="helpFullPanel" class="noselect"></div>
+                    <img src="images/help_mouse_2.png" id="helpImage">
+                    <img src="images/help2.png" id="helpButton" class="mybutton">
+                    <img src="images/fullscreen2.png" id="fullButton" class="mybutton" >
+                    <img src="images/download2.png" id="downloadButton" class="mybutton" >
+                </div>
+                <div id="info2">
+                    <p id="infobar"></p>
+                </div>
+                <div id="arrows">
+                    <img src="images/LEFT ARROW.png" id="larrow" class="interaction hasNext">
+                    <img src="images/RIGHT ARROW.png" id="rarrow" class="interaction hasPrev">
+                </div>
+                <img src="images/INSTALL PLAY CIRCLE.png" id="pauseOrPlay" class="interaction">
+                <div id="interaction">
+                    <img src="images/CLOSE LOUVRE.png" id="shutters" class="interaction">
+                </div>
+                <div id="endFullPanel" class="noselect">
+                    <img src="images/endInstall.png" id="endInstall" >
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        //var data
+        </script>
+         <script>
+			var controlPanel = document.querySelector('#pauseOrPlay');
+            var scene, camera, controls, stats;
+			var renderer, mixer;
+			
+			var delta = 0;
+			var pauseAt = 0;
+			var recorded = false;
+			var paused = false;
+
+            var clock = new THREE.Clock();
+            var url = 'scene.json';
+
+            var SCREEN_WIDTH = window.innerWidth;
+            var SCREEN_HEIGHT = window.innerHeight;
+
+            var container = document.getElementById( 'container' );
+
+            renderer = new THREE.WebGLRenderer( { antialias: true } );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+            container.appendChild( renderer.domElement );
+
+            var loader = new THREE.ObjectLoader();
+			var loadedScene = loader.parse( data.scene );
+
+
+
+			
+			scene = loadedScene;
+			
+	            // Load a scene with objects, lights and camera from a JSON file
+
+			//scene = loadedScene;
+		
+            scene.background = new THREE.Color( 0xffffff );
+
+            scene.traverse( function ( sceneChild ) {
+
+
+				if( sceneChild.hasOwnProperty('position') && sceneChild.hasOwnProperty('scale')  && sceneChild.hasOwnProperty('rotation'))
+				sceneChild.initialData = {
+						position : sceneChild.position.clone(),
+						scale : sceneChild.scale.clone(),
+						rotation : sceneChild.rotation.clone()
+					}
+
+
+                if ( sceneChild.type === 'PerspectiveCamera' ) {
+
+                    camera = sceneChild;
+                    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+			
+					camera.updateProjectionMatrix();
+					console.log(camera);
+                }
+
+            } );
+
+            if ( camera === undefined ) {
+
+                camera = new THREE.PerspectiveCamera( 30, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
+                camera.position.set( 0, 10, 20 );
+
+            }
+
+			controls = new THREE.OrbitControls( camera );
+			var publishPlayer = new PublishPlayer(scene, data.animations);
+			
+            animate();
+
+
+            window.onresize = function () {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+            };
+
+		
+			
+            function animate(timestamp) {
+
+				requestAnimationFrame( animate );
+				
+				if(paused){
+		
+					if(!recorded) {
+						pauseAt = timestamp;
+						recorded = true;
+					}
+					return;
+				} 
+				else {
+					if(recorded){
+					//delta += timestamp-pauseAt;
+						delta = timestamp - pauseAt;
+						recorded = false;
+					}
+					
+					TWEEN.update(timestamp - delta);
+			
+				}
+
+				render();
+
+            }
+
+
+            function render() {
+                renderer.render( scene, camera );
+
+			}
+			
+
+			function onkeydown ( e ) {
+
+				e.preventDefault( );
+				e = e ||window.event; // to deal with IE
+				var map = {};
+				map[e.keyCode] = e.type == 'keydown';
+				// play
+				if(map[13] && publishPlayer.isStop){
+					controlPanel.setAttribute('src','images/INSTALL PAUSE CIRCLE.png');
+					publishPlayer.playAllAnimations();
+					map = {};
+				//pause
+				}else if(map[80]){
+	
+					if( paused == false ){
+
+					 paused = true;
+
+					 controlPanel.setAttribute('src','images/INSTALL PLAY CIRCLE.png');
+					}
+					else { 
+						paused = false;
+						controlPanel.setAttribute('src','images/INSTALL PAUSE CIRCLE.png');
+						
+					};
+					map = {};
+				}
+
+			}
+
+
+			document.addEventListener('keydown',onkeydown,false );
+        </script>
+
+
+	</body>
+</html>
