@@ -175,7 +175,10 @@ Sidebar.Scene = function ( editor ) {
 				if ( prevEnvMap !== envMap ) {
 					editor.scene.traverse( function ( child ) {
 						if (child.type == 'Mesh') {
-							editor.execute( new SetMaterialMapCommand( child, 'envMap', envMap, 0 ) );
+							console.log("Update Child");
+							console.log(child);
+							if (child.name != 'Intelisurf-Background')
+								editor.execute( new SetMaterialMapCommand( child, 'envMap', envMap, 0 ) );
 						}
 			
 					} );
