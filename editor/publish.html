@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Safetyline Jalousie - Installation Guide</title>
+		<title>Installation Guide</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -80,52 +80,45 @@
 
             var loader = new THREE.ObjectLoader();
 			var loadedScene = loader.parse( data.scene );
-
-
-
-			
+            
 			scene = loadedScene;
 			
-	            // Load a scene with objects, lights and camera from a JSON file
+	        // Load a scene with objects, lights and camera from a JSON file
 
 			//scene = loadedScene;
 		
             scene.background = new THREE.Color( 0xffffff );
 
             scene.traverse( function ( sceneChild ) {
-
-
-				if( sceneChild.hasOwnProperty('position') && sceneChild.hasOwnProperty('scale')  && sceneChild.hasOwnProperty('rotation'))
-				sceneChild.initialData = {
-						position : sceneChild.position.clone(),
-						scale : sceneChild.scale.clone(),
-						rotation : sceneChild.rotation.clone()
-					}
-
-
-                if ( sceneChild.type === 'PerspectiveCamera' ) {
-
-                    camera = sceneChild;
-                    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-			
-					camera.updateProjectionMatrix();
-					console.log(camera);
+    			if( sceneChild.hasOwnProperty('position') && sceneChild.hasOwnProperty('scale')  && sceneChild.hasOwnProperty('rotation'))
+                {
+    				sceneChild.initialData = {
+    						position : sceneChild.position.clone(),
+    						scale : sceneChild.scale.clone(),
+    						rotation : sceneChild.rotation.clone()
+    					}
                 }
 
-            } );
+                if ( sceneChild.type === 'PerspectiveCamera' ) 
+                {
+                    camera = sceneChild;
+                    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+    		
+    				camera.updateProjectionMatrix();
+    				console.log(camera);
+                }
+            });
 
-            if ( camera === undefined ) {
-
+            if ( camera === undefined ) 
+            {
                 camera = new THREE.PerspectiveCamera( 30, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
                 camera.position.set( 0, 10, 20 );
-
             }
 
 			controls = new THREE.OrbitControls( camera );
 			var publishPlayer = new PublishPlayer(scene, data.animations);
 			
             animate();
-
 
             window.onresize = function () {
 
@@ -136,14 +129,11 @@
 
             };
 
-		
-			
             function animate(timestamp) {
 
 				requestAnimationFrame( animate );
 				
 				if(paused){
-		
 					if(!recorded) {
 						pauseAt = timestamp;
 						recorded = true;
@@ -152,7 +142,7 @@
 				} 
 				else {
 					if(recorded){
-					//delta += timestamp-pauseAt;
+					    //delta += timestamp-pauseAt;
 						delta = timestamp - pauseAt;
 						recorded = false;
 					}
@@ -162,48 +152,45 @@
 				}
 
 				render();
-
             }
 
 
             function render() {
                 renderer.render( scene, camera );
-
 			}
 			
 
-			function onkeydown ( e ) {
-
+			function onkeydown ( e ) 
+            {         
 				e.preventDefault( );
 				e = e ||window.event; // to deal with IE
 				var map = {};
 				map[e.keyCode] = e.type == 'keydown';
-				// play
-				if(map[13] && publishPlayer.isStop){
+            
+				if(map[13] && publishPlayer.isStop) // PLAY
+                { 
 					controlPanel.setAttribute('src','images/INSTALL PAUSE CIRCLE.png');
 					publishPlayer.playAllAnimations();
 					map = {};
-				//pause
-				}else if(map[80]){
-	
-					if( paused == false ){
-
-					 paused = true;
-
-					 controlPanel.setAttribute('src','images/INSTALL PLAY CIRCLE.png');
+            
+				}
+                else if(map[80]) // PAUSE
+                { 
+					if( paused == false )
+                    {
+    					 paused = true;               
+    					 controlPanel.setAttribute('src','images/INSTALL PLAY CIRCLE.png');
 					}
 					else { 
 						paused = false;
 						controlPanel.setAttribute('src','images/INSTALL PAUSE CIRCLE.png');
-						
 					};
 					map = {};
 				}
-
-			}
-
-
+    		}
+            
 			document.addEventListener('keydown',onkeydown,false );
+            
         </script>
 
 
