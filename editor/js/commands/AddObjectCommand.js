@@ -29,6 +29,7 @@ AddObjectCommand.prototype = {
 
 		this.editor.addObject( this.object );
 		this.editor.select( this.object );
+		console.log("AddObjectCommand.js: execute: " + this.editor);
 		console.log(this.editor.toJSON());
 		console.log(this.editor);
 

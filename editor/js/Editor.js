@@ -203,11 +203,35 @@ Editor.prototype = {
 		var scope = this;
 		var loader = new THREE.TextureLoader();
 		loader.load( "images/background/default.jpg",function( texture ){
-			scope.scene.background = texture;
-			scope.signals.sceneGraphChanged.dispatch();
+			
+			console.log("Editor.js: setDefaultBackground loaded: " + texture);
+			
+			var geometry = new THREE.SphereBufferGeometry( 1000, 8, 6, 0, Math.PI * 2, 0, Math.PI );
+			var material = new THREE.MeshBasicMaterial();
+			material.side = THREE.DoubleSide;
+			material.map = texture;
+			
+			var mesh = new THREE.Mesh( geometry, material);
+			mesh.name = 'Intelisurf-Background';
+
+			this.editor.signals.sceneGraphChanged.active = false;
+
+			this.editor.addObject( mesh );
+
+			this.editor.signals.sceneGraphChanged.active = true;
+			this.editor.signals.sceneGraphChanged.dispatch();
+			
+			//scope.scene.background = texture;
+			//scope.signals.sceneGraphChanged.dispatch();
+			
+			
 		});
 	},
-
+	
+	setInitialSphereContent : function( envMap ) {
+		
+	},
+	
 	addObject: function ( object ) {   
 		var scope = this;
 		object.traverse( function ( child ) {
@@ -222,6 +246,20 @@ Editor.prototype = {
 		this.scene.add( object );
 		this.signals.objectAdded.dispatch( object );
 		this.signals.sceneGraphChanged.dispatch();      
+	},
+	
+	addObjectAndUpdateLater: function ( object ) {   
+		var scope = this;
+		object.traverse( function ( child ) {
+
+			if ( child.geometry !== undefined ) scope.addGeometry( child.geometry );
+			if ( child.material !== undefined ) scope.addMaterial( child.material );
+
+			scope.addHelper( child );
+
+		} );
+
+		this.scene.add( object );
 	},
 
 	addAnimation: function( key, animation )
@@ -563,6 +601,7 @@ Editor.prototype = {
 		return curr;
 
 	},
+	
 	deselect: function () {
 
 		this.select( null );
@@ -589,7 +628,7 @@ Editor.prototype = {
 		this.animations.clear();
 		console.log(this.animations);
 		this.camera.copy( this.DEFAULT_CAMERA );
-		//this.scene.background.setHex( 0xaaaaaa );
+		this.scene.background.setHex( 0xeeeeee );
 		this.setDefaultBackground();
 		this.scene.fog = null;
 

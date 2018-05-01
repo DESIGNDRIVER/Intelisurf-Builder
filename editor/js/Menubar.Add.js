@@ -46,9 +46,44 @@ Menubar.Add = function ( editor ) {
 	options.add( option );
 
 	//
+	
+	// Metal Sphere
 
 	options.add( new UI.HorizontalRule() );
 
+	var option = new UI.Row();
+	option.setClass( 'option' );
+	option.setTextContent( 'MetalSphere' );
+	option.onClick( function () {
+		
+		console.log("Editor.js: setInitialSphereContent");
+		
+		var loader = new THREE.TextureLoader();
+		loader.load( "images/background/metal.jpg",function( texture ){
+			
+			console.log("Editor.js: setInitialSphereContent loaded: " + texture);
+			
+			var geometry = new THREE.SphereBufferGeometry( 3, 32, 32, 0, Math.PI * 2, 0, Math.PI );
+			var material = new THREE.MeshLambertMaterial();
+			//material.side = THREE.DoubleSide;
+			material.map = texture;
+			//material.envMap = envMap;
+			//material[ 'envMap' ] = envMap;
+			//material.needsUpdate = true;
+
+			var loader = new THREE.TextureLoader();
+			loader.load( "images/background/default.jpg",function( envMap ){
+				material.envMap = envMap;
+				material[ 'envMap' ] = envMap;
+				material.needsUpdate = true;
+				var mesh = new THREE.Mesh( geometry, material);
+				mesh.name = 'Example-Sphere';
+				editor.execute( new AddObjectCommand( mesh ) );
+			});
+		});
+	} );
+	options.add( option );
+	
 	// Plane
 
 	var option = new UI.Row();
@@ -121,7 +156,7 @@ Menubar.Add = function ( editor ) {
 	option.setTextContent( 'Sphere' );
 	option.onClick( function () {
 
-		var geometry = new THREE.SphereBufferGeometry( 1, 8, 6, 0, Math.PI * 2, 0, Math.PI );
+		var geometry = new THREE.SphereBufferGeometry( 1, 32, 32, 0, Math.PI * 2, 0, Math.PI );
 		var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
 		mesh.name = 'Sphere ' + ( ++ meshCount );
 

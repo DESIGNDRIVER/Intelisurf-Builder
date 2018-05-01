@@ -86,7 +86,6 @@ History.prototype = {
 
 		this.redos = [];
 		this.editor.signals.historyChanged.dispatch( cmd );
-
 	},
 
 	undo: function () {
