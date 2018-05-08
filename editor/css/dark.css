@@ -17,6 +17,11 @@ button {
 		color: #fff;
 		background-color: #08f;
 	}
+	
+	button.selectedred {
+		color: #fff;
+		background-color: #f00;
+	}
 
 input, textarea {
 	background-color: #222;

@@ -57,7 +57,7 @@ var Toolbar = function ( editor ) {
 		}
 
 	} );
-
+	
 	// grid
 
 	var grid = new UI.Number( 1000 ).setWidth( '40px' ).onChange( update );

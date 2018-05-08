@@ -13,6 +13,8 @@ Sidebar.Animation = function ( editor ) {
 	var container = new UI.Panel();
 	var recordingMode = "None";
 	
+	container.add(new UI.HorizontalRule());
+	
 	// name
 	var animationNameRow = new UI.Row();
 	var animationName = new UI.Input().setWidth( '150px' ).setFontSize( '12px' );
@@ -22,7 +24,6 @@ Sidebar.Animation = function ( editor ) {
 
 	container.add( animationNameRow );
 
-	
 	// type
 
 	var animationClassRow = new UI.Row();
@@ -40,30 +41,7 @@ Sidebar.Animation = function ( editor ) {
 	console.log("Sidebar.Animation.js: Sidebar.Animation aniamtionClass: " + animationClass);
 	console.log(animationClass);
 
-// FIXME: Temporarily removed order row to simplify, parentAnimations is uncommented because it is used later
-	
-	// order row
-
-//	var orderRow = new UI.Row();
-//	var order = new UI.Select().setOptions( {
-//
-//		'with': 'With',
-//		'follows': 'Follows'
-//
-//	} ).setWidth( '70px' ).setFontSize( '12px' );
-//
-//	orderRow.add( new UI.Text( 'Order' ).setWidth( '50px' ) );
-//	orderRow.add( order );
-//
 	var parentAnimations = new UI.Select().setWidth( '130px' ).setMarginLeft( '4px' ).setFontSize( '12px' );
-//
-//	orderRow.add( order );
-//	orderRow.add( parentAnimations );
-
-//	container.add( orderRow );
-
-//	console.log("Sidebar.Animation.js: Sidebar.Animation order: " + order);
-//	console.log(order);
 
 	// delay repeat row
 	var repeatAndDelayRow = new UI.Row();
@@ -75,14 +53,68 @@ Sidebar.Animation = function ( editor ) {
 	repeatAndDelayRow.add( new UI.Text( 'Delay' ).setWidth( '70px' ) );
 	repeatAndDelayRow.add( delay );
 	container.add( repeatAndDelayRow );
+	
 	//start/end at
 	var startAndEndTimeRow = new UI.Row();
-	var duration = new UI.Number().setWidth( '50px' )
+	var duration = new UI.Number().setWidth( '50px' ).setValue(1);
 	
 	startAndEndTimeRow.add( new UI.Text( 'Duration' ).setWidth( '70px' ) );
 	startAndEndTimeRow.add( duration );
 
 	container.add( startAndEndTimeRow );
+	
+	container.add(new UI.HorizontalRule());
+	
+	var recordingRow = new UI.Row();
+	
+	recordingRow.add( new UI.Text( 'Recording' ).setWidth( '90px' ) );
+	
+	var rec_start_button = new UI.Button( 'START' ).onClick( function () {
+		if (recordingMode == "Start")
+			recordingMode = "None";
+		else
+			recordingMode = "Start";
+		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
+		signals.recordingModeChanged.dispatch( 'Start' );
+	} ) ;
+	
+	recordingRow.add(rec_start_button);
+	
+	var rec_end_button = new UI.Button( 'END' ).onClick( function () {
+		if (recordingMode == "End")
+			recordingMode = "None";
+		else
+			recordingMode = "End";
+		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
+		signals.recordingModeChanged.dispatch( 'End' );
+	} ) ;
+	
+	recordingRow.add(rec_end_button);
+	
+	var rec_none_button = new UI.Button( 'UI ONLY' ).onClick( function () {
+		recordingMode = "None";
+		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
+		signals.recordingModeChanged.dispatch( 'None' );
+	} );
+	
+	rec_none_button.dom.classList.add( 'selected' );
+	
+	recordingRow.add(rec_none_button);
+	
+	signals.recordingModeChanged.add( function ( mode ) {
+		console.log("Sidebar.Animation.js: recordingModeChanged: " + mode);
+		rec_start_button.dom.classList.remove( 'selectedred' );
+		rec_end_button.dom.classList.remove( 'selectedred' );
+		rec_none_button.dom.classList.remove( 'selected' );
+
+		switch ( mode ) {
+			case 'Start': rec_start_button.dom.classList.add( 'selectedred' ); break;
+			case 'End': rec_end_button.dom.classList.add( 'selectedred' ); break;
+			case 'None': rec_none_button.dom.classList.add( 'selected' ); break;
+		}
+	} );
+	
+	container.add( recordingRow );
 	
 	container.add(new UI.HorizontalRule());
 	
@@ -113,7 +145,7 @@ Sidebar.Animation = function ( editor ) {
 	container.add( rotationFromRow );
 	
 	var scaleFromRow = new UI.Row();
-	var scaleFromLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '75px' );
+	var scaleFromLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '84px' );
 	var scaleFromX = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("fromX").onClick( updateStartScale).onChange( updateStartScale );
 	var scaleFromY = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("fromY").onClick( updateStartScale).onChange( updateStartScale );
 	var scaleFromZ = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("fromZ").onClick( updateStartScale).onChange( updateStartScale );
@@ -128,7 +160,6 @@ Sidebar.Animation = function ( editor ) {
 	
 	console.log("Sidebar.Animation.js: Sidebar.Animation end parameters");
 	
-
 	var endPositionRow = new UI.Row();
 	var endPositionX = new UI.Number().setWidth( '50px' ).onClick( updateEndPosition ).onChange( updateEndPosition );
 	var endPositionY = new UI.Number().setWidth( '50px' ).onClick( updateEndPosition ).onChange( updateEndPosition );
@@ -140,9 +171,6 @@ Sidebar.Animation = function ( editor ) {
 	container.add( endPositionRow );
 
 	// rotation
-
-	
-
 	var rotationToRow = new UI.Row();
 	var rotationToX = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateEndRotation ).onChange( updateEndRotation );
 	var rotationToY = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateEndRotation ).onChange( updateEndRotation );
@@ -154,11 +182,8 @@ Sidebar.Animation = function ( editor ) {
 	container.add( rotationToRow );
 
 	// scale
-
-	
-	
 	var scaleToRow = new UI.Row();
-	var scaleToLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '75px' );
+	var scaleToLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '84px' );
 	var scaleToX = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("toX").onClick( updateEndScale ).onChange( updateEndScale );
 	var scaleToY = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("toY").onClick( updateEndScale ).onChange( updateEndScale );
 	var scaleToZ = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("toZ").onClick( updateEndScale ).onChange( updateEndScale );
@@ -168,7 +193,7 @@ Sidebar.Animation = function ( editor ) {
 	scaleToRow.add( scaleToX, scaleToY, scaleToZ );
 
 	container.add( scaleToRow );
-	
+		
 	container.add(new UI.HorizontalRule());
 	
 	//management row
@@ -179,22 +204,6 @@ Sidebar.Animation = function ( editor ) {
 		play();
 	} ) );
 	
-	manageRow.add( new UI.Button( 'REC START' ).onClick( function () {
-		if (recordingMode == "Start")
-			recordingMode = "None";
-		else
-			recordingMode = "Start";
-		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-	} ) );
-	
-	manageRow.add( new UI.Button( 'REC END' ).onClick( function () {
-		if (recordingMode == "End")
-			recordingMode = "None";
-		else
-			recordingMode = "End";
-		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-	} ) );
-
 	//confirm
 	manageRow.add( new UI.Button( 'SAVE' ).setMarginLeft( '4px' ).onClick( storeAnimation ));
 	container.add( manageRow );

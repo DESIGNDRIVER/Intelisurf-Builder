@@ -44,6 +44,7 @@ var Editor = function () {
 
 		themeChanged: new Signal(),
 
+		recordingModeChanged: new Signal(),
 		transformModeChanged: new Signal(),
 		snapChanged: new Signal(),
 		spaceChanged: new Signal(),
