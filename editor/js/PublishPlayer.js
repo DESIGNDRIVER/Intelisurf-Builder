@@ -111,15 +111,6 @@ PublishPlayer.prototype = {
                 scope.isStop = true;
                 //console.log("stoped");
                 controlPanel.setAttribute('src','images/INSTALL PLAY CIRCLE.png');
-                
-                scene.traverse(function(child){
-                    var newPos = child.initialData.position.clone();
-                    var newScale = child.initialData.scale.clone();
-                    var newRotation = child.initialData.rotation.clone();
-                    child.position.set(newPos.x, newPos.y, newPos.z);
-                    child.scale.set(newScale.x, newScale.y, newScale.z);
-                    child.rotation.set(newRotation.x, newRotation.y, newRotation.z);
-                })
             }
         }
 
