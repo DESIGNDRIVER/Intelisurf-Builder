@@ -4,7 +4,7 @@
 
 Sidebar.Scene = function ( editor ) {
 
-    console.log("Sidebar.Scene.js: Sidebar.Scene");
+    console.log("Sidebar.Scene.js: Sidebar.Scene begin");
 
 	var signals = editor.signals;
 
@@ -368,7 +368,8 @@ Sidebar.Scene = function ( editor ) {
 		outliner.setValue( object !== null ? object.id : null );
 
 	} );
+	
+	console.log("Sidebar.Scene.js: Sidebar.Scene end");
 
 	return container;
-
 };

@@ -32,7 +32,7 @@ var Sidebar = function ( editor ) {
 	var scene = new UI.Span().add(
 		new Sidebar.Scene( editor ),
 		properties,
-		animationMenu,
+		animationMenu
 		//new Sidebar.Script( editor )
 	);
 	container.add( scene );

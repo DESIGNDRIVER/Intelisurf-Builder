@@ -47,11 +47,7 @@ AddAnimationCommand.prototype = {
 	},
 
 	fromJSON: function ( json ) {
-
 		// Command.prototype.fromJSON.call( this, json );
-
 	 	// this.animation = this.editor.animationByUuid( json.animation.animation.uuid );
-
 	}
-
 };

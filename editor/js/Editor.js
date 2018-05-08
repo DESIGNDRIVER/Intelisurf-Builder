@@ -366,7 +366,6 @@ Editor.prototype = {
 				cameraCount += 1;
 				console.log('camera',child);
 			}
-
 		} );
 		
 		console.log("Editor.js defaultLightSetting count: " + lightCount );
@@ -409,9 +408,13 @@ Editor.prototype = {
 			this.signals.sceneGraphChanged.dispatch();
 		}
 
+		console.log("Editor.js defaultLightSetting executingCommand");
+		
 		if( cameraCount == 0 ) {
 			this.execute( new AddObjectCommand(this.animationCamera) );
 		}
+		
+		console.log("Editor.js defaultLightSetting complete");
 	},
 
 	addGeometry: function ( geometry ) 
@@ -636,7 +639,7 @@ Editor.prototype = {
 	},
 
 	clear: function () {
-        console.log("Editor.js clear");
+        console.log("Editor.js clear begin");
 
 		this.history.clear();
 		this.storage.clear();
@@ -663,8 +666,12 @@ Editor.prototype = {
 
 		this.deselect();
 		this.defaultLightSetting();
+		
+		console.log("Editor.js clear added lights");
 
 		this.signals.editorCleared.dispatch();
+		
+		console.log("Editor.js clear end");
 
 	},
 
@@ -764,10 +771,6 @@ Editor.prototype = {
 		this.history.redo();
 
 	}
-
-
-	
-
 };
 function getDataURL( image ) {
 
