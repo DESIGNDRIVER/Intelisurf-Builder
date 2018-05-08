@@ -350,6 +350,7 @@ Sidebar.Animation = function ( editor ) {
 			var startPosition = { x: startPositionX.getValue(), y: startPositionY.getValue(), z:startPositionZ.getValue()};
 			var endPosition = {x: endPositionX.getValue(), y: endPositionY.getValue(), z:endPositionZ.getValue() };
 			var tweenTransform = new TWEEN.Tween(newPosition)
+			.delay(delayTime)
 			.to(endPosition, durationTime * 1000) 
 			//.easing(TWEEN.Easing.Quadratic.Out) 
 			.onUpdate(function() { 
@@ -373,6 +374,7 @@ Sidebar.Animation = function ( editor ) {
 			var newRotation = new THREE.Euler( rotationFromX.getValue() * THREE.Math.DEG2RAD, rotationFromY.getValue() * THREE.Math.DEG2RAD, rotationFromZ.getValue() * THREE.Math.DEG2RAD );
 			var toRotation = new THREE.Euler( rotationToX.getValue() * THREE.Math.DEG2RAD, rotationToY.getValue() * THREE.Math.DEG2RAD, rotationToZ.getValue() * THREE.Math.DEG2RAD );
 			var tweenRotate = new TWEEN.Tween(newRotation)
+			.delay(delayTime)
 			.to(toRotation, durationTime * 1000)
 			.onUpdate(function() { 
 				object.rotation.copy(new THREE.Euler( newRotation.x, newRotation.y, newRotation.z ) );
@@ -393,6 +395,7 @@ Sidebar.Animation = function ( editor ) {
 			var newScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromY.getValue(), scaleFromZ.getValue() );
 			var toScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
 			var tweenScale = new TWEEN.Tween(newScale)
+			.delay(delayTime)
 			.to(toScale, durationTime * 1000)
 			.onUpdate(function() { 
 				object.scale.copy( newScale );
