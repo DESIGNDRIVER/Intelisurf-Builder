@@ -166,7 +166,9 @@
 				e = e ||window.event; // to deal with IE
 				var map = {};
 				map[e.keyCode] = e.type == 'keydown';
-            
+            	
+				
+				
 				if(map[13] && publishPlayer.isStop) // PLAY
                 { 
 					controlPanel.setAttribute('src','images/INSTALL PAUSE CIRCLE.png');
@@ -174,7 +176,7 @@
 					map = {};
             
 				}
-                else if(map[80]) // PAUSE
+                else if(map[13]) // PAUSE
                 { 
 					if( paused == false )
                     {
