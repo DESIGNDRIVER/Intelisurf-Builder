@@ -180,11 +180,19 @@ Sidebar.Animation = function ( editor ) {
 	} ) );
 	
 	manageRow.add( new UI.Button( 'REC START' ).onClick( function () {
-		//play();
+		if (recordingMode == "Start")
+			recordingMode = "None";
+		else
+			recordingMode = "Start";
+		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
 	} ) );
 	
 	manageRow.add( new UI.Button( 'REC END' ).onClick( function () {
-		//play();
+		if (recordingMode == "End")
+			recordingMode = "None";
+		else
+			recordingMode = "End";
+		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
 	} ) );
 
 	//confirm
@@ -241,7 +249,6 @@ Sidebar.Animation = function ( editor ) {
 				object.rotation.copy( newRotation );
 				object.updateMatrixWorld( true );
 				signals.objectChanged.dispatch( object );
-
 			}
 		}
 	}
@@ -249,26 +256,38 @@ Sidebar.Animation = function ( editor ) {
 	// Scale update handler
 	function updateStartScale(evt) {
 	
+		console.log("update start scale");
+		
 		var object = editor.selected;
 		if ( object == null )  return;
 		var newScale = null;
-		var elId = evt.target.id;
+		
+		var elId = null;
+		
+		if (evt != null)
+			elId = evt.target.id;
+		else
+			elId = "editor";
+		
 		if( scaleFromLock.getValue() == true ) {
 			if( elId == "fromX" ){	
 				newScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromX.getValue(), scaleFromX.getValue() );
 				scaleFromY.setValue( scaleFromX.getValue() );
 				scaleFromZ.setValue( scaleFromX.getValue() );
 			}
-
 			else if( elId == "fromY" ) {
 				newScale = new THREE.Vector3( scaleFromY.getValue(), scaleFromY.getValue(), scaleFromY.getValue() );
 				scaleFromX.setValue( scaleFromY.getValue() );
 				scaleFromZ.setValue( scaleFromY.getValue() );
 			}
-			else { 
+			else if (elId == "fromZ"){ 
 				newScale = new THREE.Vector3( scaleFromZ.getValue(), scaleFromZ.getValue(), scaleFromZ.getValue() );
 				scaleFromX.setValue( scaleFromZ.getValue() );
 				scaleFromY.setValue( scaleFromZ.getValue() );
+			}
+			else if( elId == "editor" )
+			{
+				newScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
 			}
 		}else{
 			newScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromY.getValue(), scaleFromZ.getValue() );
@@ -285,24 +304,32 @@ Sidebar.Animation = function ( editor ) {
 		var object = editor.selected;
 		if ( object == null )  return;
 		var newScale = null;
-		var elId = evt.target.id;
+	
+		var elId = null;
+		
+		if (evt != null)
+			elId = evt.target.id;
+		else
+			elId = "editor";
 		
 		if( scaleToLock.getValue() == true ) {
-			if( elId == "toX" ){	
+			if( elId == "toX" ) {	
 				newScale = new THREE.Vector3( scaleToX.getValue(), scaleToX.getValue(), scaleToX.getValue() );
 				scaleToY.setValue( scaleToX.getValue() );
 				scaleToZ.setValue( scaleToX.getValue() );
 			}
-
 			else if( elId == "toY" ) {
 				newScale = new THREE.Vector3( scaleToY.getValue(), scaleToY.getValue(), scaleToY.getValue() );
 				scaleToX.setValue( scaleToY.getValue() );
 				scaleToZ.setValue( scaleToY.getValue() );
 			}
-			else { 
+			else if( elId == "toZ" ) { 
 				newScale = new THREE.Vector3( scaleToZ.getValue(), scaleToZ.getValue(), scaleToZ.getValue() );
 				scaleToX.setValue( scaleToZ.getValue() );
 				scaleToY.setValue( scaleToZ.getValue() );
+			}
+			else if( elId == "editor" ) { 
+				newScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
 			}
 		}else{
 			newScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
@@ -463,16 +490,19 @@ Sidebar.Animation = function ( editor ) {
 	}
 
 	function refreshUI(){
+		
 		console.log("Sidebar.Animation.js: Sidebar.Animation refreshUI begin");
+		
 		var animations = editor.animations.animations;
 		var options = {};
+		
 		for ( var key in animations) {
 			if (animations.hasOwnProperty(key)) {
 				console.log("Sidebar.Animation.js: Sidebar.Animation refreshUI animation key: " + key);
 				options[key] = animations[key].name;
 			}
-
 		}
+		
 		console.log(options);
 		parentAnimations.setOptions(options);
 		console.log("Sidebar.Animation.js: Sidebar.Animation refreshUI end");
@@ -481,6 +511,45 @@ Sidebar.Animation = function ( editor ) {
 	signals.animationChanged.add( refreshUI );
 	signals.editorCleared.add( refreshUI );
 	signals.sceneGraphChanged.add( refreshUI );
+	
+	signals.refreshSidebarObject3D.add( function ( object ) {
+		if (recordingMode == "Start")
+		{
+			console.log("Sidebar.Animation.js: Sidebar.Animation Start refreshSidebarObject3D begin");
+			console.log(object);
+			
+			startPositionX.setValue( object.position.x );
+			startPositionY.setValue( object.position.y );
+			startPositionZ.setValue( object.position.z );
+			rotationFromX.setValue( object.rotation.x );
+			rotationFromY.setValue( object.rotation.y );
+			rotationFromZ.setValue( object.rotation.z );
+			scaleFromX.setValue( object.scale.x );
+			scaleFromY.setValue( object.scale.y );
+			scaleFromZ.setValue( object.scale.z );
+			
+			refreshUI();
+			
+			console.log("Sidebar.Animation.js: Sidebar.Animation Start refreshSidebarObject3D end");
+		}
+		else if (recordingMode == "End")
+		{
+			console.log("Sidebar.Animation.js: Sidebar.Animation End refreshSidebarObject3D begin");
+			console.log(object);
+			
+			endPositionX.setValue( object.position.x );
+			endPositionY.setValue( object.position.y );
+			endPositionZ.setValue( object.position.z );
+			rotationToX.setValue( object.rotation.x );
+			rotationToY.setValue( object.rotation.y );
+			rotationToZ.setValue( object.rotation.z );
+			scaleToX.setValue( object.scale.x );
+			scaleToY.setValue( object.scale.y );
+			scaleToZ.setValue( object.scale.z );
+			
+			console.log("Sidebar.Animation.js: Sidebar.Animation End refreshSidebarObject3D end");
+		}
+	} );
 	
 	console.log("Sidebar.Animation.js: Sidebar.Animation complete");
 	
