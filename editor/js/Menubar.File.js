@@ -333,15 +333,18 @@ Menubar.File = function ( editor ) {
 		//
 		//console.log(editor.scene);
 		var output  = {}
-		output.scene = editor.scene.toJSON();
 		
-		output.animations = editor.animations.toJSON();
+		output = editor.toJSON();
+		
+		//output.config = config.toJSON();
+		
+		//output.animations = editor.animations.toJSON();
 		// var output = editor.toJSON();
 
 		// output.metadata.type = 'App';
 		// delete output.history;
 
-		var vr = false;	
+		var vr = config.getKey('project/vr');	
 
 		output = JSON.stringify( output, parseNumber, '\t' );
 		output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
@@ -372,8 +375,8 @@ Menubar.File = function ( editor ) {
 
 
 		loader.load( 'publish.html', function ( content ) {
-			if ( vr ) {
-				includes.push( '<script src="js/WebVR.js"></script>' );
+			if ( true ) {
+				content = content.replace('<!-- <script src="js/WebVR.js"></script> -->', '<script src="js/WebVR.js"></script>');
 			}
 			content = content.replace( '//var data', output );
 			console.log("2");
@@ -432,7 +435,7 @@ Menubar.File = function ( editor ) {
 	
 
 
-		if ( vr ) {
+		if ( true ) {
 			loader.load( '../examples/js/vr/WebVR.js', function ( content ) {
 				zip.file( 'js/WebVR.js', content );
 			} );

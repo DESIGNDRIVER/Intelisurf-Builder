@@ -6,6 +6,8 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <!-- <script  src="player.js"></script> -->
+
+		<!-- <script  src="js/WebVR.js"></script> -->
 		<script src="js/three.js"></script>
 		<script src="js/Tween.js"></script>
 		<script src="js/OrbitControls.js"></script>
@@ -76,6 +78,8 @@
             renderer = new THREE.WebGLRenderer( { antialias: true } );
             renderer.setPixelRatio( window.devicePixelRatio );
             renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+            renderer.vr.enabled = data.project.vr;
+            
             container.appendChild( renderer.domElement );
 
             var loader = new THREE.ObjectLoader();
@@ -192,6 +196,9 @@
     		}
             
 			document.addEventListener('keydown',onkeydown,false );
+			
+			if (data.project.vr)
+                document.body.appendChild( WEBVR.createButton( renderer ) );
             
         </script>
 
