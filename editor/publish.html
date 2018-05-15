@@ -7,7 +7,7 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <!-- <script  src="player.js"></script> -->
 
-		<!-- <script  src="js/WebVR.js"></script> -->
+		<!-- <script src="js/WebVR.js"></script> -->
 		<script src="js/three.js"></script>
 		<script src="js/Tween.js"></script>
 		<script src="js/OrbitControls.js"></script>
@@ -59,13 +59,13 @@
         //var data
         </script>
          <script>
+         	console.log("index.html: Begin: " + data.project.title);
          	console.log("index.html: VR Mode: " + data.project.vr);
          
          	// Custom UI Overlay
          	var uibanner = document.querySelector('#uibanner');
          	uibanner.src = data.project.ui.bannerimage;
          	uibanner.hidden = !data.project.ui.bannerenabled;
-         
          
          	// Rendering
 			var controlPanel = document.querySelector('#pauseOrPlay');
@@ -119,6 +119,7 @@
                     camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
     		
     				camera.updateProjectionMatrix();
+    				console.log("index.html: CameraSet: " + data.project.title);
     				console.log(camera);
                 }
             });
@@ -130,6 +131,10 @@
             }
 
 			controls = new THREE.OrbitControls( camera );
+			
+			console.log("index.html: Controls");
+			console.log(controls);
+			
 			var publishPlayer = new PublishPlayer(scene, data.animations);
 			
             animate();
@@ -210,6 +215,7 @@
 			if (data.project.vr)
                 document.body.appendChild( WEBVR.createButton( renderer ) );
             
+			console.log("index.html: End: " + data.project.title);
         </script>
 
 

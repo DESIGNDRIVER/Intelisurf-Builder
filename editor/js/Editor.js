@@ -707,6 +707,7 @@ Editor.prototype = {
 		this.config.setKey('project/ui/banner/enabled', json.project.ui.bannerenabled);
 		this.config.setKey('project/ui/banner/image', json.project.ui.bannerimage);
 		this.config.setKey('project/vr', json.project.vr);
+		this.config.setKey('project/title', json.project.title);
 		
 //		project: {
 //			gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
@@ -756,7 +757,8 @@ Editor.prototype = {
 				ui: {
 					bannerenabled: this.config.getKey( 'project/ui/banner/enabled' ),
 					bannerimage: this.config.getKey( 'project/ui/banner/image' ),
-				}
+				},
+				title: this.config.getKey( 'project/title' )
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),

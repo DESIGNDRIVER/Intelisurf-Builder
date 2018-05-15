@@ -318,6 +318,8 @@ Menubar.File = function ( editor ) {
 				zip.file(path, data, {binary:true});
 			});
 		}
+		
+		console.log(Sidebar.Project);
 
 		compressPicture("images/safetyline_logo.png", zip);
 		compressPicture("images/help_mouse_2.png", zip);
