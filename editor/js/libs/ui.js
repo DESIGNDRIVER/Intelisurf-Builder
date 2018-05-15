@@ -917,7 +917,6 @@ UI.HorizontalRule = function () {
 UI.HorizontalRule.prototype = Object.create( UI.Element.prototype );
 UI.HorizontalRule.prototype.constructor = UI.HorizontalRule;
 
-
 // Button
 
 UI.Button = function ( value ) {

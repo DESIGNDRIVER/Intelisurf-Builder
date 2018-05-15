@@ -336,6 +336,8 @@ Menubar.File = function ( editor ) {
 		
 		output = editor.toJSON();
 		
+		delete output['history'];
+		
 		//output.config = config.toJSON();
 		
 		//output.animations = editor.animations.toJSON();
@@ -349,10 +351,8 @@ Menubar.File = function ( editor ) {
 		output = JSON.stringify( output, parseNumber, '\t' );
 		output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
 
-		//zip.file( 'app.json', output );
 		output = "var data = " + output;
-		//
-
+		
 		var title = config.getKey( 'project/title' );
 
 		var manager = new THREE.LoadingManager( function () {

@@ -21,28 +21,26 @@ var Editor = function () {
 	this.sceneBackup = null;
 
 	this.signals = {
-
 		// script
-
 		editScript: new Signal(),
 
 		// player
-
 		startPlayer: new Signal(),
 		stopPlayer: new Signal(),
 
 		// actions
-
 		showModal: new Signal(),
 
 		// notifications
-
+		editorStorageGet: new Signal(),		
 		editorCleared: new Signal(),
 
 		savingStarted: new Signal(),
 		savingFinished: new Signal(),
 
 		themeChanged: new Signal(),
+		
+		thereWasAChangeThatWeWouldLikeToSave: new Signal(),
 
 		recordingModeChanged: new Signal(),
 		transformModeChanged: new Signal(),
@@ -705,6 +703,22 @@ Editor.prototype = {
 		console.log(json.animations);
 		console.log( json.scene);
 		this.setScene( loader.parse( json.scene ), json.background);
+		
+		this.config.setKey('project/ui/banner/enabled', json.project.ui.bannerenabled);
+		this.config.setKey('project/ui/banner/image', json.project.ui.bannerimage);
+		this.config.setKey('project/vr', json.project.vr);
+		
+//		project: {
+//			gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
+//			gammaOutput: this.config.getKey( 'project/renderer/gammaOutput' ),
+//			shadows: this.config.getKey( 'project/renderer/shadows' ),
+//			vr: this.config.getKey( 'project/vr' ),
+//			ui: {
+//				bannerenabled: this.config.getKey( 'project/ui/banner/enabled' ),
+//				bannerimage: this.config.getKey( 'project/ui/banner/image' ),
+//			}
+//		},		
+		
 		//this.defaultLightSetting();
 		
 		//console.log(this.animations);
@@ -738,7 +752,11 @@ Editor.prototype = {
 				gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
 				gammaOutput: this.config.getKey( 'project/renderer/gammaOutput' ),
 				shadows: this.config.getKey( 'project/renderer/shadows' ),
-				vr: this.config.getKey( 'project/vr' )
+				vr: this.config.getKey( 'project/vr' ),
+				ui: {
+					bannerenabled: this.config.getKey( 'project/ui/banner/enabled' ),
+					bannerimage: this.config.getKey( 'project/ui/banner/image' ),
+				}
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),
@@ -778,6 +796,11 @@ Editor.prototype = {
 function getDataURL( image ) {
 
 	var canvas;
+	
+	if (image === undefined)
+	{
+		return '';
+	}
 
 	if ( image instanceof HTMLCanvasElement ) {
 

@@ -4,6 +4,8 @@
 
 var Viewport = function ( editor ) {
 
+	console.log("Viewport.js: Viewport");
+	
 	var signals = editor.signals;
 	var animationLoopId;
 	var preCamera;
@@ -14,8 +16,33 @@ var Viewport = function ( editor ) {
 
 	container.add( new Viewport.Info( editor ) );
 
-	//
+	console.log("Viewport.js: Viewport Viewport.Info");
+	console.log(container);
+	
+	uibanner = new UI.Image( '', '100%', '50px' );
+	uibanner.setPosition( 'absolute' );
+	uibanner.setLeft( container.Left );
+	uibanner.setTop( container.Top );
+	uibanner.dom.style.backgroundColor = "#222266";
+	
+	//style="background-color:red;"
+	
+	//uibanner.dom.style.width = '100%';
+	//uibanner.dom.style.height = '50px';
+	
+	
+//	if ((uibanner.dom.src == "")||(uibanner.dom.src.endsWith(".html")))
+//	{
+//		uibanner.dom.hidden = true;
+//	}
+	
+	//uibanner.dom.src = "https://gallery.yopriceville.com/var/resizes/Free-Clipart-Pictures/Ribbons-and-Banners-PNG/Red_and_Gold_Banner_PNG_Clipart_Image.png?m=1507172115";
+	
+	console.log("Viewport.js: Viewport Viewport.UIBanner");
+	console.log(uibanner);
 
+	container.add(uibanner);
+	
 	var renderer = null;
 
 	//var camera = editor.camera;

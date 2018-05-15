@@ -226,8 +226,12 @@
 
 			editor.storage.init( function () {
 
+				console.log("index.html: Editor Storage Init");
+				
 				editor.storage.get( function ( state ) {
 
+					console.log("index.html: Editor Storage Get Begin:");
+					
 					if ( isLoadingFromHash ) return;
 
 					if ( state !== undefined ) {
@@ -239,11 +243,12 @@
 					var selected = editor.config.getKey( 'selected' );
 
 					if ( selected !== undefined ) {
-
 						editor.selectByUuid( selected );
-
 					}
+					
+					console.log("index.html: Editor Storage Get End: " + editor.config.getKey( 'project/ui/banner/enabled') );
 
+					editor.signals.editorStorageGet.dispatch();
 				} );
 
 				//
@@ -252,10 +257,10 @@
 
 				function saveState( scene ) {
 
+					console.log("index.html: Editor Storage SaveState");
+					
 					if ( editor.config.getKey( 'autosave' ) === false ) {
-
 						return;
-
 					}
 
 					clearTimeout( timeout );
@@ -289,6 +294,7 @@
 				signals.scriptChanged.add( saveState );
 				signals.animationChanged.add( saveState );
 				signals.historyChanged.add( saveState );
+				signals.thereWasAChangeThatWeWouldLikeToSave.add( saveState );
 
 				signals.showModal.add( function ( content ) {
 					//console.log("showModal");

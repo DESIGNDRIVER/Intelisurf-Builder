@@ -18,6 +18,9 @@ var Config = function ( name ) {
 		'project/renderer/shadows': true,
 
 		'project/vr': false,
+		
+		'project/ui/banner/enabled': false,
+		'project/ui/banner/image': '',
 
 		'settings/history': false
 	};

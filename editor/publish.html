@@ -21,11 +21,12 @@
         <div id = "inteliContainer">
             <!-- The user interface layout itself -->
             <div id="uiContainer">
-                <a href="http://safetylinejalousie.com.au/" target="_blank"><img src="images/safetyline_logo.png" id="safetylineLogo" ></a>
+                <!-- a href="http://safetylinejalousie.com.au/" target="_blank"><img src="images/safetyline_logo.png" id="safetylineLogo" ></a-->
              
-                <div id="installFrame" class="centredText noselect">
+                <img id="uibanner" src='' width='100%' height='50px'>
+                <!-- >div id="installFrame" class="centredText noselect">
                     <h3 id="hero">INSTALLATION GUIDE</h3>
-                </div>
+                </div-->
                 <!-- <img src="images/VIGNETTE.png" id="vignette"> -->
                 <div id="helpFullPanel" class="noselect">
                     <img src="images/help_mouse_2.png" id="helpImage" >
@@ -58,6 +59,13 @@
         //var data
         </script>
          <script>
+         	console.log("index.html: VR Mode: " + data.project.vr);
+         
+         	// Custom UI Overlay
+         	var uibanner = document.querySelector('#uibanner');
+         	uibanner.src = data.project.ui.bannerimage;
+         
+         	// Rendering
 			var controlPanel = document.querySelector('#pauseOrPlay');
             var scene, camera, controls, stats;
 			var renderer, mixer;

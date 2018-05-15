@@ -27,6 +27,7 @@ Sidebar.Project = function ( editor ) {
 	var title = new UI.Input( config.getKey( 'project/title' ) ).setLeft( '100px' ).onChange( function () {
 
 		config.setKey( 'project/title', this.getValue() );
+		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 
 	} );
 
@@ -41,6 +42,7 @@ Sidebar.Project = function ( editor ) {
 	var editable = new UI.Checkbox( config.getKey( 'project/editable' ) ).setLeft( '100px' ).onChange( function () {
 
 		config.setKey( 'project/editable', this.getValue() );
+		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 
 	} );
 
@@ -55,6 +57,7 @@ Sidebar.Project = function ( editor ) {
 	var vr = new UI.Checkbox( config.getKey( 'project/vr' ) ).setLeft( '100px' ).onChange( function () {
 
 		config.setKey( 'project/vr', this.getValue() );
+		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 
 	} );
 
@@ -116,6 +119,7 @@ Sidebar.Project = function ( editor ) {
 	var rendererShadows = new UI.THREE.Boolean( config.getKey( 'project/renderer/shadows' )).onChange( function () {
 
 		config.setKey( 'project/renderer/shadows', this.getValue() );
+		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 		updateRenderer();
 
 	} );
@@ -144,8 +148,57 @@ Sidebar.Project = function ( editor ) {
 	//rendererPropertiesRow.add( rendererGammaOutput );
 
 	container.add( rendererPropertiesRow );
-
+	
+	var rule = new UI.HorizontalRule();
+	container.add(rule);
+	
 	//
+	var uibannerEnvMapRow = new UI.Row();
+	var uibannerEnvMapEnabled = new UI.Checkbox( config.getKey( 'project/ui/banner/enabled') ).onChange( envMapUpdate );
+	var uibannerEnvMap = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( envMapUpdate );
+	
+	uibanner.dom.hidden = !uibannerEnvMapEnabled.getValue();
+
+	uibannerEnvMapRow.add( new UI.Text( 'UI Banner' ).setWidth( '90px' ) );
+	uibannerEnvMapRow.add( uibannerEnvMapEnabled );
+	uibannerEnvMapRow.add( uibannerEnvMap );
+
+	container.add( uibannerEnvMapRow );
+
+	signals.editorStorageGet.add(updateFromConfig);
+	
+	function envMapUpdate(){
+
+        console.log("Sidebar.Project.js: envMapUpdate Begin: " + config.getKey( 'project/ui/banner/enabled'));
+        console.log(uibannerEnvMap);
+        console.log(uibanner);
+        
+        var uibanner_enabled = uibannerEnvMapEnabled.getValue();
+        
+        if (uibannerEnvMap.texture.image != undefined)
+        	uibanner.setValue(uibannerEnvMap.texture.image.src);
+        
+        config.setKey( 'project/ui/banner/enabled', uibanner_enabled);
+        
+        if (uibannerEnvMap.texture.image != undefined)
+        	config.setKey( 'project/ui/banner/image', uibannerEnvMap.texture.image.src);
+        
+        uibanner.dom.hidden = !uibanner_enabled;
+        
+		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
+		
+		console.log("Sidebar.Project.js: envMapUpdate End: " + config.getKey( 'project/ui/banner/enabled'));
+
+		updateRenderer();
+	}
+	
+	function updateFromConfig()
+	{
+		console.log("Sidebar.Project.js: updateFromConfig: " + config.getKey( 'project/ui/banner/enabled'));
+		console.log(config.getKey( 'project/ui/banner/image'));
+		uibannerEnvMapEnabled.setValue(config.getKey( 'project/ui/banner/enabled'));
+		uibannerEnvMap.setValue(config.getKey( 'project/ui/banner/image'));
+	}
 
 	function updateRenderer() {
 
@@ -177,7 +230,6 @@ Sidebar.Project = function ( editor ) {
 			console.log("Sidebar.Project.js: Shadows Disabled");
 
 		signals.rendererChanged.dispatch( renderer );
-
 	}
 
 	createRenderer( config.getKey( 'project/renderer' ), config.getKey( 'project/renderer/antialias' ), config.getKey( 'project/renderer/shadows' ), config.getKey( 'project/renderer/gammaInput' ), config.getKey( 'project/renderer/gammaOutput' ) );

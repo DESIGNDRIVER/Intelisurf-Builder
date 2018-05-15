@@ -2,6 +2,73 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
+UI.Image = function (src, width, height) {
+
+	UI.Element.call( this );
+
+	var scope = this;
+
+	var image = document.createElement( 'img' );
+	image.style.width = width;
+	image.style.height = height;
+	image.src = src;
+		
+	this.texture = src;
+	this.dom = image;
+	return this;
+};
+
+UI.Image.prototype = Object.create( UI.Element.prototype );
+UI.Image.prototype.constructor = UI.Texture;
+
+UI.Image.prototype.getValue = function () {
+	return this.texture;
+};
+
+UI.Image.prototype.setValue = function ( texture ) {
+
+	this.dom.src = texture;
+	this.dom.hidden = false;
+//	var canvas = this.dom.children[ 0 ];
+//	var name = this.dom.children[ 1 ];
+//	var context = canvas.getContext( '2d' );
+//
+//	if ( texture !== null ) {
+//
+//		var image = texture.image;
+//
+//		if ( image !== undefined && image.width > 0 ) {
+//
+//			name.value = texture.sourceFile;
+//
+//			var scale = canvas.width / image.width;
+//			context.drawImage( image, 0, 0, image.width * scale, image.height * scale );
+//
+//		} else {
+//
+//			name.value = texture.sourceFile + ' (error)';
+//			context.clearRect( 0, 0, canvas.width, canvas.height );
+//
+//		}
+//
+//	} else {
+//
+//		name.value = '';
+//
+//		if ( context !== null ) {
+//
+//			// Seems like context can be null if the canvas is not visible
+//
+//			context.clearRect( 0, 0, canvas.width, canvas.height );
+//
+//		}
+//
+//	}
+
+	this.texture = texture;
+};
+
+
 UI.Texture = function ( mapping ) {
 
 	UI.Element.call( this );
