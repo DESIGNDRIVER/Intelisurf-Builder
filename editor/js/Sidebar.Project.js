@@ -99,7 +99,7 @@ Sidebar.Project = function ( editor ) {
 
 	// Renderer / Antialias
 
-	//var rendererPropertiesRow = new UI.Row().setMarginLeft( '90px' );
+	var rendererPropertiesRow = new UI.Row().setMarginLeft( '0px' );
 
 	var rendererAntialias = new UI.THREE.Boolean( config.getKey( 'project/renderer/antialias' ), 'antialias' ).onChange( function () {
 
@@ -110,14 +110,16 @@ Sidebar.Project = function ( editor ) {
 	//rendererPropertiesRow.add( rendererAntialias );
 
 	// Renderer / Shadows
+	
+	rendererPropertiesRow.add( new UI.Text( 'Shadows' ).setWidth( '90px' ) );
 
-	var rendererShadows = new UI.THREE.Boolean( config.getKey( 'project/renderer/shadows' ), 'shadows' ).onChange( function () {
+	var rendererShadows = new UI.THREE.Boolean( config.getKey( 'project/renderer/shadows' )).onChange( function () {
 
 		config.setKey( 'project/renderer/shadows', this.getValue() );
 		updateRenderer();
 
 	} );
-	//rendererPropertiesRow.add( rendererShadows );
+	rendererPropertiesRow.add( rendererShadows );
 
 	//rendererPropertiesRow.add( new UI.Break() );
 
@@ -141,7 +143,7 @@ Sidebar.Project = function ( editor ) {
 	} );
 	//rendererPropertiesRow.add( rendererGammaOutput );
 
-	//container.add( rendererPropertiesRow );
+	container.add( rendererPropertiesRow );
 
 	//
 
@@ -166,10 +168,13 @@ Sidebar.Project = function ( editor ) {
 		renderer.gammaOutput = gammaOut;
 		if ( shadows && renderer.shadowMap ) {
 
-			renderer.shadowMap.enabled = true;
-			// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
+			console.log("Sidebar.Project.js: Shadows Enabled begin");
+			renderer.shadowMapEnabled = true;
+			renderer.shadowMapType = THREE.PCFSoftShadowMap;
+			console.log("Sidebar.Project.js: Shadows Enabled end");
 		}
+		else
+			console.log("Sidebar.Project.js: Shadows Disabled");
 
 		signals.rendererChanged.dispatch( renderer );
 

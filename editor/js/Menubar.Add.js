@@ -111,6 +111,8 @@ Menubar.Add = function ( editor ) {
 		var geometry = new THREE.BoxBufferGeometry( 1, 1, 1, 1, 1, 1 );
 		var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
 		mesh.name = 'Box ' + ( ++ meshCount );
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
 
 		editor.execute( new AddObjectCommand( mesh ) );
 
@@ -159,6 +161,8 @@ Menubar.Add = function ( editor ) {
 		var geometry = new THREE.SphereBufferGeometry( 1, 32, 32, 0, Math.PI * 2, 0, Math.PI );
 		var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
 		mesh.name = 'Sphere ' + ( ++ meshCount );
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
 
 		editor.execute( new AddObjectCommand( mesh ) );
 
@@ -334,19 +338,22 @@ Menubar.Add = function ( editor ) {
 		light.name = 'DirectionalLight ' + ( ++ lightCount );
 		light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
 		light.position.set( 0, 5000, 5000 );
+		light.castShadow = true;
 		editor.execute( new AddObjectCommand( light ) );
 
 		var light = new THREE.DirectionalLight( color, intensity );
 		light.name = 'DirectionalLight ' + ( ++ lightCount );
 		light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
 		light.position.set( 0, 5000, -5000 );
+		light.intensity = 0;
+		light.castShadow = true;
 		editor.execute( new AddObjectCommand( light ) );
 
 
 		var light = new THREE.AmbientLight( color, intensity );
 		light.name = 'AmbientLight ' + ( ++ lightCount );
 		light.position.set( 0, 5000, 0 );
-
+		light.intensity = 0;
 		editor.execute( new AddObjectCommand( light ) );
 
 	} );

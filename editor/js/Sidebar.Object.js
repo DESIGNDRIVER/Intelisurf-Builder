@@ -247,10 +247,10 @@ Sidebar.Object = function ( editor ) {
 
 	objectShadowRow.add( new UI.Text( 'Shadow' ).setWidth( '90px' ) );
 
-	var objectCastShadow = new UI.THREE.Boolean( false, 'cast' ).onChange( update );
+	var objectCastShadow = new UI.THREE.Boolean( true, 'cast' ).onChange( update );
 	objectShadowRow.add( objectCastShadow );
 
-	var objectReceiveShadow = new UI.THREE.Boolean( false, 'receive' ).onChange( update );
+	var objectReceiveShadow = new UI.THREE.Boolean( true, 'receive' ).onChange( update );
 	objectShadowRow.add( objectReceiveShadow );
 
 	var objectShadowRadius = new UI.Number( 1 ).onChange( update );

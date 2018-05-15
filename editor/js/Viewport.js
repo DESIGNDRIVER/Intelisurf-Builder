@@ -325,6 +325,7 @@ var Viewport = function ( editor ) {
 		renderer.autoUpdateScene = false;
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setSize( container.dom.offsetWidth, container.dom.offsetHeight );
+		renderer.shadowMapEnabled = true;
 
 		container.dom.appendChild( renderer.domElement );
 

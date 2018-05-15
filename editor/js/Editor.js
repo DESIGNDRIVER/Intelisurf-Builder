@@ -378,16 +378,18 @@ Editor.prototype = {
 			console.log("Editor.js defaultLightSetting adding lights" );
 			
 			var color = 0xffffff;
-			var intensity = 1;
+			var intensity = 0.6;
 			var light = new THREE.DirectionalLight( color, intensity );
 			light.name = 'DirectionalLight ' + ( ++ lightCount );
 			light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
 			light.position.set( 0, 5000, 5000 );
+			light.castShadow = true;
+			light.shadowCameraVisible = true;
 			//this.execute( new AddObjectCommand( light ) );
 			
 			this.addObject( light );
 
-			var light = new THREE.DirectionalLight( color, intensity );
+			var light = new THREE.DirectionalLight( color, 0 );
 			light.name = 'DirectionalLight ' + ( ++ lightCount );
 			light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
 			light.position.set( 0, 5000, -5000 );
@@ -395,10 +397,10 @@ Editor.prototype = {
 
 			this.addObject( light );
 
-			var light = new THREE.AmbientLight( color, intensity );
+			var light = new THREE.AmbientLight( color, 0 );
 			light.name = 'AmbientLight ' + ( ++ lightCount );
 			light.position.set( 0, 5000, 0 );
-			
+			//light.intensity = 0;
 			this.addObject( light );
 
 			//this.execute( new AddObjectCommand( light ) ); 
