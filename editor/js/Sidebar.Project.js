@@ -195,9 +195,23 @@ Sidebar.Project = function ( editor ) {
 	function updateFromConfig()
 	{
 		console.log("Sidebar.Project.js: updateFromConfig: " + config.getKey( 'project/ui/banner/enabled'));
-		console.log(config.getKey( 'project/ui/banner/image'));
+		//console.log(config.getKey( 'project/ui/banner/image'));
 		uibannerEnvMapEnabled.setValue(config.getKey( 'project/ui/banner/enabled'));
-		uibannerEnvMap.setValue(config.getKey( 'project/ui/banner/image'));
+	
+		var image = document.createElement( 'img' );
+		image.src = config.getKey( 'project/ui/banner/image');
+		var texture = new Object();
+		texture.image = image;
+		
+		console.log("Sidebar.Project.js: updateFromConfig: Mid" );
+		console.log(texture);
+		
+		uibannerEnvMap.setValue(texture);
+		
+		if (uibannerEnvMap.texture.image != undefined)
+        	uibanner.setValue(uibannerEnvMap.texture.image.src);
+		
+		console.log("Sidebar.Project.js: updateFromConfig: End: " + config.getKey( 'project/ui/banner/enabled'));
 	}
 
 	function updateRenderer() {

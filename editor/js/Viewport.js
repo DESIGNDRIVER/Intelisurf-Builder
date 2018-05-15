@@ -23,7 +23,7 @@ var Viewport = function ( editor ) {
 	uibanner.setPosition( 'absolute' );
 	uibanner.setLeft( container.Left );
 	uibanner.setTop( container.Top );
-	uibanner.dom.style.backgroundColor = "#222266";
+	uibanner.dom.style.backgroundColor = "#333333";
 	
 	//style="background-color:red;"
 	

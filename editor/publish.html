@@ -64,6 +64,8 @@
          	// Custom UI Overlay
          	var uibanner = document.querySelector('#uibanner');
          	uibanner.src = data.project.ui.bannerimage;
+         	uibanner.hidden = !data.project.ui.bannerenabled;
+         
          
          	// Rendering
 			var controlPanel = document.querySelector('#pauseOrPlay');
