@@ -200,8 +200,20 @@ History.prototype = {
 
 	fromJSON: function ( json ) {
 
+		console.log("History.js: fromJSON: Begin");
+		
 		if ( json === undefined ) return;
 
+		console.log("History.js: fromJSON: Json Found");
+		console.log(json);
+		
+		if (json.undos === undefined )
+		{
+			console.log("History.js: fromJSON: EMPTY HISTORY ISSUE");
+			return;
+		}
+		
+		console.log("History.js: fromJSON: Undos");
 		for ( var i = 0; i < json.undos.length; i ++ ) {
 
 			var cmdJSON = json.undos[ i ];
@@ -214,6 +226,7 @@ History.prototype = {
 
 		}
 
+		console.log("History.js: fromJSON: Redos");
 		for ( var i = 0; i < json.redos.length; i ++ ) {
 
 			var cmdJSON = json.redos[ i ];
@@ -226,9 +239,11 @@ History.prototype = {
 
 		}
 
+		console.log("History.js: fromJSON: Dispatch");
 		// Select the last executed undo-command
 		this.editor.signals.historyChanged.dispatch( this.undos[ this.undos.length - 1 ] );
 
+		console.log("History.js: fromJSON: End");
 	},
 
 	clear: function () {

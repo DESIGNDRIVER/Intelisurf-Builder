@@ -642,6 +642,9 @@ Editor.prototype = {
 	clear: function () {
         console.log("Editor.js clear begin");
 
+        this.config.setKey( UIBuilder_Keys_Banner_Enabled, false);
+		this.config.setKey( UIBuilder_Keys_Banner_Image, '');
+		
 		this.history.clear();
 		this.storage.clear();
 		this.animations.clear();
@@ -680,34 +683,45 @@ Editor.prototype = {
 
 	fromJSON: function ( json ) {
 
+		console.log("Editor.js: fromJSON Begin");
+		
 		var loader = new THREE.ObjectLoader();
 		console.log(json);
 		// backwards
 
+		console.log("Editor.js: fromJSON: Scene");
 		if ( json.scene === undefined ) {
 
 			this.setScene( loader.parse( json ), json.background );
+			console.log("Editor.js: fromJSON: Scene End");
 			return;
 
 		}
 
+		console.log("Editor.js: fromJSON: Camera");
 		var camera = loader.parse( json.camera );
 
 		this.camera.copy( camera );
 		this.camera.aspect = this.DEFAULT_CAMERA.aspect;
 		this.camera.updateProjectionMatrix();
 
+		console.log("Editor.js: fromJSON: History");
 		this.history.fromJSON( json.history );
+		console.log("Editor.js: fromJSON: Scripts");
 		this.scripts = json.scripts;
+		console.log("Editor.js: fromJSON: Animations");
 		this.animations.fromJSON(json.animations);
 		console.log(json.animations);
-		console.log( json.scene);
+		console.log(json.scene);
 		this.setScene( loader.parse( json.scene ), json.background);
 		
-		this.config.setKey('project/ui/banner/enabled', json.project.ui.bannerenabled);
-		this.config.setKey('project/ui/banner/image', json.project.ui.bannerimage);
+		console.log("Editor.js: fromJSON: Config");
+		this.config.setKey( UIBuilder_Keys_Banner_Enabled, json.project.ui.bannerenabled);
+		this.config.setKey( UIBuilder_Keys_Banner_Image, json.project.ui.bannerimage);
 		this.config.setKey('project/vr', json.project.vr);
 		this.config.setKey('project/title', json.project.title);
+		
+		console.log("Editor.js: fromJSON: End");
 		
 //		project: {
 //			gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
@@ -755,8 +769,8 @@ Editor.prototype = {
 				shadows: this.config.getKey( 'project/renderer/shadows' ),
 				vr: this.config.getKey( 'project/vr' ),
 				ui: {
-					bannerenabled: this.config.getKey( 'project/ui/banner/enabled' ),
-					bannerimage: this.config.getKey( 'project/ui/banner/image' ),
+					bannerenabled: this.config.getKey( UIBuilder_Keys_Banner_Enabled ),
+					bannerimage: this.config.getKey( UIBuilder_Keys_Banner_Image ),
 				},
 				title: this.config.getKey( 'project/title' )
 			},
@@ -764,7 +778,7 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			animations: this.animations.toJSON(),
-			history: this.history.toJSON(),
+			history: [] /*this.history.toJSON()*/, // FIXME: Disabled saving history since it was dropping out somewhere
 			background: getDataURL(scene.background.image),
 
 		};

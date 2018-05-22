@@ -154,9 +154,10 @@ Sidebar.Project = function ( editor ) {
 	
 	//
 	var uibannerEnvMapRow = new UI.Row();
-	var uibannerEnvMapEnabled = new UI.Checkbox( config.getKey( 'project/ui/banner/enabled') ).onChange( envMapUpdate );
+	var uibannerEnvMapEnabled = new UI.Checkbox( config.getKey(UIBuilder_Keys_Banner_Enabled) ).onChange( envMapUpdate );
 	var uibannerEnvMap = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( envMapUpdate );
 	
+	console.log("Sidebar.Project.js: setting uibannerdomhidden: " + !uibannerEnvMapEnabled.getValue());
 	uibanner.dom.hidden = !uibannerEnvMapEnabled.getValue();
 
 	uibannerEnvMapRow.add( new UI.Text( 'UI Banner' ).setWidth( '90px' ) );
@@ -169,7 +170,7 @@ Sidebar.Project = function ( editor ) {
 	
 	function envMapUpdate(){
 
-        console.log("Sidebar.Project.js: envMapUpdate Begin: " + config.getKey( 'project/ui/banner/enabled'));
+        console.log("Sidebar.Project.js: envMapUpdate Begin: " + config.getKey(UIBuilder_Keys_Banner_Enabled));
         console.log(uibannerEnvMap);
         console.log(uibanner);
         
@@ -178,16 +179,16 @@ Sidebar.Project = function ( editor ) {
         if (uibannerEnvMap.texture.image != undefined)
         	uibanner.setValue(uibannerEnvMap.texture.image.src);
         
-        config.setKey( 'project/ui/banner/enabled', uibanner_enabled);
+        config.setKey( UIBuilder_Keys_Banner_Enabled, uibanner_enabled);
         
         if (uibannerEnvMap.texture.image != undefined)
-        	config.setKey( 'project/ui/banner/image', uibannerEnvMap.texture.image.src);
+        	config.setKey( UIBuilder_Keys_Banner_Image, uibannerEnvMap.texture.image.src);
         
         uibanner.dom.hidden = !uibanner_enabled;
         
 		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 		
-		console.log("Sidebar.Project.js: envMapUpdate End: " + config.getKey( 'project/ui/banner/enabled'));
+		console.log("Sidebar.Project.js: envMapUpdate End: " + config.getKey( UIBuilder_Keys_Banner_Enabled));
 
 		updateRenderer();
 	}
@@ -247,7 +248,7 @@ Sidebar.Project = function ( editor ) {
 	}
 
 	createRenderer( config.getKey( 'project/renderer' ), config.getKey( 'project/renderer/antialias' ), config.getKey( 'project/renderer/shadows' ), config.getKey( 'project/renderer/gammaInput' ), config.getKey( 'project/renderer/gammaOutput' ) );
-
+	
 	return container;
 
 };

@@ -4,7 +4,7 @@
 
 Sidebar.Settings = function ( editor ) {
 
-	console.log("Sidebar.Settings.js: Sidebar.Settings");
+	console.log("Sidebar.Settings.js: Sidebar.Settings Begin");
 	
 	var config = editor.config;
 	var signals = editor.signals;
@@ -12,8 +12,6 @@ Sidebar.Settings = function ( editor ) {
 	var container = new UI.Panel();
 	container.setBorderTop( '0' );
 	container.setPaddingTop( '20px' );
-
-	// class
 
 	var options = {
 		'css/light.css': 'light',
@@ -26,30 +24,8 @@ Sidebar.Settings = function ( editor ) {
 
 	editor.setTheme( 'css/dark.css' );
 	editor.config.setKey( 'theme', 'css/dark.css' );
-
-//  This code allowed the theme to be picked from either dark or light
-//
-//	if ( config.getKey( 'theme' ) !== undefined ) {
-//
-//		console.log("Sidebar.Settings.js: Sidebar.Settings themeFound: " +  config.getKey( 'theme' ));
-//		theme.setValue( config.getKey( 'theme' ) );
-//	}
-//
-//	theme.onChange( function () 
-//	{
-//		var value = this.getValue();
-//		
-//		console.log("Sidebar.Settings.js: Sidebar.Settings theme.onChange: " + value);
-//
-//		editor.setTheme( 'css/dark.css' );
-//		editor.config.setKey( 'theme', value );
-//	} );
-//
-//	themeRow.add( new UI.Text( 'Theme' ).setWidth( '90px' ) );
-//	themeRow.add( theme );
-//
-//	container.add( themeRow );
+	
+	console.log("Sidebar.Settings.js: Sidebar.Settings End");
 
 	return container;
-
 };
