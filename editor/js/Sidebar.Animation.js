@@ -10,8 +10,14 @@ Sidebar.Animation = function ( editor ) {
 	var options = {};
 	var possibleAnimations = {};
 	var currAnimationType = "Transform";
+	var currFrame = "Start";
 	var container = new UI.Panel();
 	var recordingMode = "None";
+	var selectedObject = 'undefined';
+	
+	var scales = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)];
+	var rotations = [new THREE.Euler(0,0,0), new THREE.Euler(0,0,0)];
+	var positions = [ new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)];
 	
 	container.add(new UI.HorizontalRule());
 	
@@ -23,7 +29,43 @@ Sidebar.Animation = function ( editor ) {
 	animationNameRow.add( animationName );
 
 	container.add( animationNameRow );
+	
+	var animationSelectedRow = new UI.Row();
+	var animationSelected = new UI.Text( editor.selected ).setWidth( '150px' ).setFontSize( '12px' );
 
+	animationSelectedRow.add( new UI.Text( 'Selected' ).setWidth( '90px' ) );
+	
+	var selected_object_button = new UI.Button( 'Select' ).onClick( function () {
+		selectedObject = editor.selected;
+		animationSelected.setValue(editor.selected.name);
+	} ) ;
+	
+	signals.objectSelected.add(function(object) { 
+		if (selectedObject === undefined) { 
+			selectedObject = object; animationSelected.setValue(editor.selected);
+		}
+	});
+	
+	animationSelectedRow.add( animationSelected );
+	animationSelectedRow.add( selected_object_button );
+	
+	container.add( animationSelectedRow );
+
+	// frame
+	
+	var animationFrameRow = new UI.Row();
+	var animationFrame = new UI.Select().setOptions( {
+
+		0: 'Start',
+		1: 'End'
+		
+	} ).setWidth( '150px' ).setFontSize( '12px' ).onChange( updateFrame );
+
+	animationFrameRow.add( new UI.Text( 'Frame' ).setWidth( '100px' ) );
+	animationFrameRow.add( animationFrame );
+
+	container.add( animationFrameRow );
+	
 	// type
 
 	var animationClassRow = new UI.Row();
@@ -75,42 +117,40 @@ Sidebar.Animation = function ( editor ) {
 		else
 			recordingMode = "Start";
 		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-		signals.recordingModeChanged.dispatch( 'Start' );
+		signals.recordingModeChanged.dispatch( recordingMode );
 	} ) ;
 	
 	recordingRow.add(rec_start_button);
 	
-	var rec_end_button = new UI.Button( 'END' ).onClick( function () {
-		if (recordingMode == "End")
-			recordingMode = "None";
-		else
-			recordingMode = "End";
-		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-		signals.recordingModeChanged.dispatch( 'End' );
-	} ) ;
-	
-	recordingRow.add(rec_end_button);
-	
-	var rec_none_button = new UI.Button( 'UI ONLY' ).onClick( function () {
-		recordingMode = "None";
-		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-		signals.recordingModeChanged.dispatch( 'None' );
-	} );
-	
-	rec_none_button.dom.classList.add( 'selected' );
-	
-	recordingRow.add(rec_none_button);
+//	var rec_end_button = new UI.Button( 'END' ).onClick( function () {
+//		if (recordingMode == "End")
+//			recordingMode = "None";
+//		else
+//			recordingMode = "End";
+//		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
+//		signals.recordingModeChanged.dispatch( 'End' );
+//	} ) ;
+//	
+//	recordingRow.add(rec_end_button);
+//	
+//	var rec_none_button = new UI.Button( 'UI ONLY' ).onClick( function () {
+//		recordingMode = "None";
+//		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
+//		signals.recordingModeChanged.dispatch( 'None' );
+//	} );
+//	
+//	rec_none_button.dom.classList.add( 'selected' );
+//	
+//	recordingRow.add(rec_none_button);
 	
 	signals.recordingModeChanged.add( function ( mode ) {
 		console.log("Sidebar.Animation.js: recordingModeChanged: " + mode);
 		rec_start_button.dom.classList.remove( 'selectedred' );
-		rec_end_button.dom.classList.remove( 'selectedred' );
-		rec_none_button.dom.classList.remove( 'selected' );
+//		rec_end_button.dom.classList.remove( 'selectedred' );
+//		rec_none_button.dom.classList.remove( 'selected' );
 
 		switch ( mode ) {
 			case 'Start': rec_start_button.dom.classList.add( 'selectedred' ); break;
-			case 'End': rec_end_button.dom.classList.add( 'selectedred' ); break;
-			case 'None': rec_none_button.dom.classList.add( 'selected' ); break;
 		}
 	} );
 	
@@ -118,83 +158,47 @@ Sidebar.Animation = function ( editor ) {
 	
 	container.add(new UI.HorizontalRule());
 	
+	// EDIT POSITIONS
+	
+	var PositionRow = new UI.Row();
+	var PositionX = new UI.Number().setWidth( '50px' ).onClick( updatePosition ).onChange(updatePosition);
+	var PositionY = new UI.Number().setWidth( '50px' ).onClick( updatePosition ).onChange(updatePosition);
+	var PositionZ = new UI.Number().setWidth( '50px' ).onClick( updatePosition ).onChange(updatePosition);
+
+	PositionRow.add( new UI.Text( 'Position' ).setWidth( '90px' ) );
+	PositionRow.add( PositionX, PositionY, PositionZ );
+
+	container.add( PositionRow );
+	
+	// EDIT ROTATIONS
+	
+	var rotationRow = new UI.Row();
+	var rotationX = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateRotation ).onChange( updateRotation );
+	var rotationY = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateRotation ).onChange( updateRotation );
+	var rotationZ = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateRotation ).onChange( updateRotation );
+
+	rotationRow.add( new UI.Text( 'Rotation' ).setWidth( '90px' ) );
+	rotationRow.add( rotationX, rotationY, rotationZ );
+
+	container.add( rotationRow );
+	
+	// EDIT SCALE
+	
+	var scaleRow = new UI.Row();
+	var scaleLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '84px' );
+	var scaleX = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("scaleX").onClick( updateScale).onChange( updateScale );
+	var scaleY = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("scaleY").onClick( updateScale).onChange( updateScale );
+	var scaleZ = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("scaleZ").onClick( updateScale).onChange( updateScale );
+
+	scaleRow.add( new UI.Text( 'Scale' ).setWidth( '90px' ) );
+	scaleRow.add( scaleLock );
+	scaleRow.add( scaleX, scaleY, scaleZ );
+
+	container.add( scaleRow );
+	
+	container.add(new UI.HorizontalRule());
+	
 	console.log("Sidebar.Animation.js: Sidebar.Animation start parameters");
-
-	/**
-	 * start
-	 */
-	
-	var startPositionRow = new UI.Row();
-	var startPositionX = new UI.Number().setWidth( '50px' ).onClick( updateStartPosition ).onChange(updateStartPosition);
-	var startPositionY = new UI.Number().setWidth( '50px' ).onClick( updateStartPosition ).onChange(updateStartPosition);
-	var startPositionZ = new UI.Number().setWidth( '50px' ).onClick( updateStartPosition ).onChange(updateStartPosition);
-
-	startPositionRow.add( new UI.Text( 'Start Position' ).setWidth( '90px' ) );
-	startPositionRow.add( startPositionX, startPositionY, startPositionZ );
-
-	container.add( startPositionRow );
-	
-	var rotationFromRow = new UI.Row();
-	var rotationFromX = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateStartRotation ).onChange( updateStartRotation );
-	var rotationFromY = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateStartRotation ).onChange( updateStartRotation );
-	var rotationFromZ = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateStartRotation ).onChange( updateStartRotation );
-
-	rotationFromRow.add( new UI.Text( 'Rotation From' ).setWidth( '90px' ) );
-	rotationFromRow.add( rotationFromX, rotationFromY, rotationFromZ );
-
-	container.add( rotationFromRow );
-	
-	var scaleFromRow = new UI.Row();
-	var scaleFromLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '84px' );
-	var scaleFromX = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("fromX").onClick( updateStartScale).onChange( updateStartScale );
-	var scaleFromY = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("fromY").onClick( updateStartScale).onChange( updateStartScale );
-	var scaleFromZ = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("fromZ").onClick( updateStartScale).onChange( updateStartScale );
-
-	scaleFromRow.add( new UI.Text( 'Scale From' ).setWidth( '90px' ) );
-	scaleFromRow.add( scaleFromLock );
-	scaleFromRow.add( scaleFromX, scaleFromY, scaleFromZ );
-
-	container.add( scaleFromRow );
-	
-	container.add(new UI.HorizontalRule());
-	
-	console.log("Sidebar.Animation.js: Sidebar.Animation end parameters");
-	
-	var endPositionRow = new UI.Row();
-	var endPositionX = new UI.Number().setWidth( '50px' ).onClick( updateEndPosition ).onChange( updateEndPosition );
-	var endPositionY = new UI.Number().setWidth( '50px' ).onClick( updateEndPosition ).onChange( updateEndPosition );
-	var endPositionZ = new UI.Number().setWidth( '50px' ).onClick( updateEndPosition ).onChange( updateEndPosition );
-
-	endPositionRow.add( new UI.Text( 'End Position' ).setWidth( '90px' ) );
-	endPositionRow.add( endPositionX, endPositionY, endPositionZ );
-
-	container.add( endPositionRow );
-
-	// rotation
-	var rotationToRow = new UI.Row();
-	var rotationToX = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateEndRotation ).onChange( updateEndRotation );
-	var rotationToY = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateEndRotation ).onChange( updateEndRotation );
-	var rotationToZ = new UI.Number().setStep( 10 ).setUnit( '°' ).setWidth( '50px' ).onClick( updateEndRotation ).onChange( updateEndRotation );
-
-	rotationToRow.add( new UI.Text( 'Rotation To' ).setWidth( '90px' ) );
-	rotationToRow.add( rotationToX, rotationToY, rotationToZ );
-
-	container.add( rotationToRow );
-
-	// scale
-	var scaleToRow = new UI.Row();
-	var scaleToLock = new UI.Checkbox( true ).setPosition( 'absolute' ).setLeft( '84px' );
-	var scaleToX = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("toX").onClick( updateEndScale ).onChange( updateEndScale );
-	var scaleToY = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("toY").onClick( updateEndScale ).onChange( updateEndScale );
-	var scaleToZ = new UI.Number( 1 ).setRange( 0.01, Infinity ).setWidth( '50px' ).setId("toZ").onClick( updateEndScale ).onChange( updateEndScale );
-
-	scaleToRow.add( new UI.Text( 'Scale To' ).setWidth( '90px' ) );
-	scaleToRow.add( scaleToLock );
-	scaleToRow.add( scaleToX, scaleToY, scaleToZ );
-
-	container.add( scaleToRow );
-		
-	container.add(new UI.HorizontalRule());
 	
 	//management row
 	var manageRow = new UI.Row();
@@ -213,59 +217,47 @@ Sidebar.Animation = function ( editor ) {
 	console.log("Sidebar.Animation.js: Sidebar.Animation added UI");
 
 	// Position update handler
-	function updateStartPosition() {
-		var object = editor.selected;
-		if ( object !== null ) {
-			var newPosition = new THREE.Vector3( startPositionX.getValue(), startPositionY.getValue(), startPositionZ.getValue() );
-			if ( object.position.distanceTo( newPosition ) >= 0.01 ) {
-				object.position.copy( newPosition );
-				object.updateMatrixWorld( true );
-				signals.objectChanged.dispatch(object );
-			}
-		}
-	}
-
-	function updateEndPosition() {
-		var object = editor.selected;
-		if ( object !== null ) {
-			var newPosition = new THREE.Vector3( endPositionX.getValue(), endPositionY.getValue(), endPositionZ.getValue() );
-			if ( object.position.distanceTo( newPosition ) >= 0.01 ) {
-				object.position.copy( newPosition );
-				object.updateMatrixWorld( true );
-				signals.objectChanged.dispatch(object );
-			}
-		}	
-	}
-
-	// Rotation update handler 
-	function updateStartRotation() {
-		var object = editor.selected;
-		if ( object !== null ) {
-			var newRotation = new THREE.Euler( rotationFromX.getValue() * THREE.Math.DEG2RAD, rotationFromY.getValue() * THREE.Math.DEG2RAD, rotationFromZ.getValue() * THREE.Math.DEG2RAD );
-			if ( object.rotation.toVector3().distanceTo( newRotation.toVector3() ) >= 0.01 ) {
-				object.rotation.copy( newRotation );
-				object.updateMatrixWorld( true );
-				signals.objectChanged.dispatch( object );
-			}
-		}
-	}
-
-	function updateEndRotation() {
-		var object = editor.selected;
-		if ( object !== null ) {
-			var newRotation = new THREE.Euler( rotationToX.getValue() * THREE.Math.DEG2RAD, rotationToY.getValue() * THREE.Math.DEG2RAD, rotationToZ.getValue() * THREE.Math.DEG2RAD );
-			if ( object.rotation.toVector3().distanceTo( newRotation.toVector3() ) >= 0.01 ) {
-				object.rotation.copy( newRotation );
-				object.updateMatrixWorld( true );
-				signals.objectChanged.dispatch( object );
-			}
-		}
-	}
-
-	// Scale update handler
-	function updateStartScale(evt) {
 	
-		console.log("update start scale");
+	function updatePosition() {
+		console.log("Sidebar.Animation.js: Update Position");
+
+		var object = editor.selected;
+		if ( object !== null ) {
+			var newPosition = new THREE.Vector3( PositionX.getValue(), PositionY.getValue(), PositionZ.getValue() );
+			
+			positions[animationFrame.getValue()] = newPosition;
+			
+			if ( object.position.distanceTo( newPosition ) >= 0.01 ) {
+				object.position.copy( newPosition );
+				object.updateMatrixWorld( true );
+				signals.objectChanged.dispatch(object );
+			}
+		}
+		
+		console.log("Sidebar.Animation.js: updatePosition: " + animationFrame.getValue());
+	}
+	
+	// Rotation update handler 
+	function updateRotation() {
+		var object = editor.selected;
+		if ( object !== null ) {
+			var newRotation = new THREE.Euler( rotationX.getValue() * THREE.Math.DEG2RAD, rotationY.getValue() * THREE.Math.DEG2RAD, rotationZ.getValue() * THREE.Math.DEG2RAD );
+			rotations[animationFrame.getValue()] = newRotation;
+			if ( object.rotation.toVector3().distanceTo( newRotation.toVector3() ) >= 0.01 ) {
+				object.rotation.copy( newRotation );
+				object.updateMatrixWorld( true );
+				signals.objectChanged.dispatch( object );
+			}
+		}
+		
+		console.log("Sidebar.Animation.js: updatePosition: " + animationFrame.getValue());
+	}
+	
+	// Scale update handler
+	function updateScale(evt) {
+	
+		console.log("update scale: " + scaleLock.getValue());
+		console.log(evt);
 		
 		var object = editor.selected;
 		if ( object == null )  return;
@@ -278,29 +270,31 @@ Sidebar.Animation = function ( editor ) {
 		else
 			elId = "editor";
 		
-		if( scaleFromLock.getValue() == true ) {
-			if( elId == "fromX" ){	
-				newScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromX.getValue(), scaleFromX.getValue() );
-				scaleFromY.setValue( scaleFromX.getValue() );
-				scaleFromZ.setValue( scaleFromX.getValue() );
+		if( scaleLock.getValue() == true ) {
+			if( elId == "scaleX" ){	
+				newScale = new THREE.Vector3( scaleX.getValue(), scaleX.getValue(), scaleX.getValue() );
+				scaleY.setValue( scaleX.getValue() );
+				scaleZ.setValue( scaleX.getValue() );
 			}
-			else if( elId == "fromY" ) {
-				newScale = new THREE.Vector3( scaleFromY.getValue(), scaleFromY.getValue(), scaleFromY.getValue() );
-				scaleFromX.setValue( scaleFromY.getValue() );
-				scaleFromZ.setValue( scaleFromY.getValue() );
+			else if( elId == "scaleY" ) {
+				newScale = new THREE.Vector3( scaleY.getValue(), scaleY.getValue(), scaleY.getValue() );
+				scaleX.setValue( scaleY.getValue() );
+				scaleZ.setValue( scaleY.getValue() );
 			}
-			else if (elId == "fromZ"){ 
-				newScale = new THREE.Vector3( scaleFromZ.getValue(), scaleFromZ.getValue(), scaleFromZ.getValue() );
-				scaleFromX.setValue( scaleFromZ.getValue() );
-				scaleFromY.setValue( scaleFromZ.getValue() );
+			else if (elId == "scaleZ"){ 
+				newScale = new THREE.Vector3( scaleZ.getValue(), scaleZ.getValue(), scaleZ.getValue() );
+				scaleX.setValue( scaleZ.getValue() );
+				scaleY.setValue( scaleZ.getValue() );
 			}
 			else if( elId == "editor" )
 			{
-				newScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
+				newScale = new THREE.Vector3( scaleX.getValue(), scaleY.getValue(), scaleZ.getValue() );
 			}
 		}else{
-			newScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromY.getValue(), scaleFromZ.getValue() );
+			newScale = new THREE.Vector3( scaleX.getValue(), scaleY.getValue(), scaleZ.getValue() );
 		}
+		
+		scales[animationFrame.getValue()] = newScale;
 
 		if ( object.scale.distanceTo( newScale ) >= 0.01 ) {
 			object.scale.copy( newScale );
@@ -309,48 +303,26 @@ Sidebar.Animation = function ( editor ) {
 		}
 	}
 
-	function updateEndScale(evt) {
-		var object = editor.selected;
-		if ( object == null )  return;
-		var newScale = null;
+	function updateFrame() {
+		console.log("Sidebar.Animation.js: Sidebar.Animation updateFrame begin");
+		
+		var i = animationFrame.getValue();
+		
+		PositionX.setValue(positions[i].x);
+		PositionY.setValue(positions[i].y);
+		PositionZ.setValue(positions[i].z);
+		
+		rotationX.setValue(rotations[i].x);
+		rotationY.setValue(rotations[i].y);
+		rotationZ.setValue(rotations[i].z);
+		
+		scaleX.setValue(scales[i].x);
+		scaleY.setValue(scales[i].y);
+		scaleZ.setValue(scales[i].z);
 	
-		var elId = null;
-		
-		if (evt != null)
-			elId = evt.target.id;
-		else
-			elId = "editor";
-		
-		if( scaleToLock.getValue() == true ) {
-			if( elId == "toX" ) {	
-				newScale = new THREE.Vector3( scaleToX.getValue(), scaleToX.getValue(), scaleToX.getValue() );
-				scaleToY.setValue( scaleToX.getValue() );
-				scaleToZ.setValue( scaleToX.getValue() );
-			}
-			else if( elId == "toY" ) {
-				newScale = new THREE.Vector3( scaleToY.getValue(), scaleToY.getValue(), scaleToY.getValue() );
-				scaleToX.setValue( scaleToY.getValue() );
-				scaleToZ.setValue( scaleToY.getValue() );
-			}
-			else if( elId == "toZ" ) { 
-				newScale = new THREE.Vector3( scaleToZ.getValue(), scaleToZ.getValue(), scaleToZ.getValue() );
-				scaleToX.setValue( scaleToZ.getValue() );
-				scaleToY.setValue( scaleToZ.getValue() );
-			}
-			else if( elId == "editor" ) { 
-				newScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
-			}
-		}else{
-			newScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
-		}
-
-		if ( object.scale.distanceTo( newScale ) >= 0.01 ) {
-			object.scale.copy( newScale );
-			object.updateMatrixWorld( true );
-			signals.objectChanged.dispatch( object );
-		}
+		console.log("Sidebar.Animation.js: Sidebar.Animation updateFrame end");
 	}
-
+	
 	function update() {
 		// FIXME: Hardcoding animationtype
 		console.log("Sidebar.Animation.js: Sidebar.Animation update begin");
@@ -382,9 +354,9 @@ Sidebar.Animation = function ( editor ) {
 
 		if( currAnimationType == "Transform" ) {
 			// 1. Translate
-			var newPosition = { x: startPositionX.getValue(), y: startPositionY.getValue(), z:startPositionZ.getValue()};
-			var startPosition = { x: startPositionX.getValue(), y: startPositionY.getValue(), z:startPositionZ.getValue()};
-			var endPosition = {x: endPositionX.getValue(), y: endPositionY.getValue(), z:endPositionZ.getValue() };
+			var newPosition = { x: positions[0].x, y: positions[0].y, z:positions[0].z};
+			var startPosition = {  x: positions[0].x, y: positions[0].y, z:positions[0].z};
+			var endPosition = { x: positions[1].x, y: positions[1].y, z:positions[1].z};
 			var tweenTransform = new TWEEN.Tween(newPosition)
 			.delay(delayTime)
 			.to(endPosition, durationTime * 1000) 
@@ -406,9 +378,9 @@ Sidebar.Animation = function ( editor ) {
 			signals.startAnimation.dispatch( );
 
 			// 2. Rotate
-			var startRotation = new THREE.Euler( rotationFromX.getValue() * THREE.Math.DEG2RAD, rotationFromY.getValue() * THREE.Math.DEG2RAD, rotationFromZ.getValue() * THREE.Math.DEG2RAD );
-			var newRotation = new THREE.Euler( rotationFromX.getValue() * THREE.Math.DEG2RAD, rotationFromY.getValue() * THREE.Math.DEG2RAD, rotationFromZ.getValue() * THREE.Math.DEG2RAD );
-			var toRotation = new THREE.Euler( rotationToX.getValue() * THREE.Math.DEG2RAD, rotationToY.getValue() * THREE.Math.DEG2RAD, rotationToZ.getValue() * THREE.Math.DEG2RAD );
+			var startRotation = new THREE.Euler( rotations[0].x * THREE.Math.DEG2RAD, rotations[0].y * THREE.Math.DEG2RAD, rotations[0].z * THREE.Math.DEG2RAD );
+			var newRotation = new THREE.Euler( rotations[0].x * THREE.Math.DEG2RAD, rotations[0].y * THREE.Math.DEG2RAD, rotations[0].z * THREE.Math.DEG2RAD );
+			var toRotation = new THREE.Euler(  rotations[1].x * THREE.Math.DEG2RAD, rotations[1].y * THREE.Math.DEG2RAD, rotations[1].z * THREE.Math.DEG2RAD  );
 			var tweenRotate = new TWEEN.Tween(newRotation)
 			.delay(delayTime)
 			.to(toRotation, durationTime * 1000)
@@ -427,9 +399,9 @@ Sidebar.Animation = function ( editor ) {
 			signals.startAnimation.dispatch( );
 			
 			// 3. Scale
-			var startScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromY.getValue(), scaleFromZ.getValue() );
-			var newScale = new THREE.Vector3( scaleFromX.getValue(), scaleFromY.getValue(), scaleFromZ.getValue() );
-			var toScale = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
+			var startScale = new THREE.Vector3( scales[0].x, scales[0].y, scales[0].z);
+			var newScale = new THREE.Vector3( scales[0].x, scales[0].y, scales[0].z);
+			var toScale = new THREE.Vector3( scales[1].x, scales[1].y, scales[1].z);
 			var tweenScale = new TWEEN.Tween(newScale)
 			.delay(delayTime)
 			.to(toScale, durationTime * 1000)
@@ -483,12 +455,12 @@ Sidebar.Animation = function ( editor ) {
 		var delayTime = delay.getValue(); 
 		
 		if( currAnimationType == "Transform" ) {
-			fromPos = new THREE.Vector3( startPositionX.getValue(), startPositionY.getValue(), startPositionZ.getValue() );
-			toPos = new THREE.Vector3( endPositionX.getValue(), endPositionY.getValue(), endPositionZ.getValue() );
-			fromRot = new THREE.Euler( rotationFromX.getValue() * THREE.Math.DEG2RAD, rotationFromY.getValue() * THREE.Math.DEG2RAD, rotationFromZ.getValue() * THREE.Math.DEG2RAD );
-			toRot = new THREE.Euler( rotationToX.getValue() * THREE.Math.DEG2RAD, rotationToY.getValue() * THREE.Math.DEG2RAD, rotationToZ.getValue() * THREE.Math.DEG2RAD );
-			fromSca = new THREE.Vector3( scaleFromX.getValue(), scaleFromY.getValue(), scaleFromZ.getValue() );
-			toSca = new THREE.Vector3( scaleToX.getValue(), scaleToY.getValue(), scaleToZ.getValue() );
+			fromPos = new THREE.Vector3( positions[0].x, positions[0].y, positions[0].z );
+			toPos = new THREE.Vector3( positions[1].x, positions[1].y, positions[1].z );
+			fromRot = new THREE.Euler( rotations[0].x * THREE.Math.DEG2RAD, rotations[0].y * THREE.Math.DEG2RAD, rotations[0].z * THREE.Math.DEG2RAD );
+			toRot = new THREE.Euler( rotations[1].x * THREE.Math.DEG2RAD, rotations[1].y * THREE.Math.DEG2RAD, rotations[1].z * THREE.Math.DEG2RAD );
+			fromSca = new THREE.Vector3(  scales[0].x, scales[0].y, scales[0].z );
+			toSca = new THREE.Vector3(  scales[1].x, scales[1].y, scales[1].z);
 		}
 		
 		console.log("Sidebar.Animation.js: Sidebar.Animation storeAnimation execute add animation");
@@ -527,36 +499,19 @@ Sidebar.Animation = function ( editor ) {
 			console.log("Sidebar.Animation.js: Sidebar.Animation Start refreshSidebarObject3D begin");
 			console.log(object);
 			
-			startPositionX.setValue( object.position.x );
-			startPositionY.setValue( object.position.y );
-			startPositionZ.setValue( object.position.z );
-			rotationFromX.setValue( object.rotation.x );
-			rotationFromY.setValue( object.rotation.y );
-			rotationFromZ.setValue( object.rotation.z );
-			scaleFromX.setValue( object.scale.x );
-			scaleFromY.setValue( object.scale.y );
-			scaleFromZ.setValue( object.scale.z );
+			PositionX.setValue( object.position.x );
+			PositionY.setValue( object.position.y );
+			PositionZ.setValue( object.position.z );
+			rotationX.setValue( object.rotation.x );
+			rotationY.setValue( object.rotation.y );
+			rotationZ.setValue( object.rotation.z );
+			scaleX.setValue( object.scale.x );
+			scaleY.setValue( object.scale.y );
+			scaleZ.setValue( object.scale.z );
 			
 			refreshUI();
 			
 			console.log("Sidebar.Animation.js: Sidebar.Animation Start refreshSidebarObject3D end");
-		}
-		else if (recordingMode == "End")
-		{
-			console.log("Sidebar.Animation.js: Sidebar.Animation End refreshSidebarObject3D begin");
-			console.log(object);
-			
-			endPositionX.setValue( object.position.x );
-			endPositionY.setValue( object.position.y );
-			endPositionZ.setValue( object.position.z );
-			rotationToX.setValue( object.rotation.x );
-			rotationToY.setValue( object.rotation.y );
-			rotationToZ.setValue( object.rotation.z );
-			scaleToX.setValue( object.scale.x );
-			scaleToY.setValue( object.scale.y );
-			scaleToZ.setValue( object.scale.z );
-			
-			console.log("Sidebar.Animation.js: Sidebar.Animation End refreshSidebarObject3D end");
 		}
 	} );
 	
