@@ -18,9 +18,19 @@ PublishPlayer.prototype = {
         var tweenCount = 0;
         var roots = [];
         var paramDict = {};
-        //console.log(this.animations)
+        var objectDict = {};
         
-        for ( var key in this.animations ) {
+        var keys = [];
+
+        for (var key in this.animations) {
+            if (this.animations.hasOwnProperty(key)) {
+                keys.push(key);
+            }
+        }
+        
+        for ( let i = 0; i < keys.length; i++ ) {
+
+        	var key = keys[i];
     
         	console.log("PublishPlayer.js playAllAnimations got key: " + key);
         	
@@ -28,6 +38,7 @@ PublishPlayer.prototype = {
     
             var currAni = this.animations[key];
             var object = this.getObjectByUuid( currAni.objectID );
+            objectDict[i] = object;
             
             if ( currAni.type == "Transform")
         	{
@@ -39,8 +50,8 @@ PublishPlayer.prototype = {
                 .repeat(currAni.repeat)
                 .to(currAni.toPos, currAni.duration * 1000) 
                 .onUpdate(function() { 
-                     object.position.copy( this );
-                     object.updateMatrixWorld( true );
+                     objectDict[i].position.copy( this );
+                     objectDict[i].updateMatrixWorld( true );
                 });
                 
                 tweenCount += 1;
@@ -52,8 +63,8 @@ PublishPlayer.prototype = {
                 .repeat(currAni.repeat)
                 .to(currAni.toRot, currAni.duration * 1000)
                 .onUpdate(function() { 
-                    object.rotation.copy(new THREE.Euler(this.x,this.y,this.z) );
-                    object.updateMatrixWorld( true );
+                	objectDict[i].rotation.copy(new THREE.Euler(this.x,this.y,this.z) );
+                	objectDict[i].updateMatrixWorld( true );
                 });
                 
                 tweenCount += 1;
@@ -65,8 +76,8 @@ PublishPlayer.prototype = {
                 .repeat(currAni.repeat)
                 .to(currAni.toSca, currAni.duration * 1000)
                 .onUpdate(function() { 
-                    object.scale.copy( this );
-                    object.updateMatrixWorld( true );	
+                	objectDict[i].scale.copy( this );
+                	objectDict[i].updateMatrixWorld( true );	
                 });
                 
                 tweenCount += 1;
