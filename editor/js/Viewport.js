@@ -22,8 +22,7 @@ var Viewport = function ( editor ) {
 	console.log("Viewport.js: Viewport Viewport.UIBanner");
 	
 	container.add(UIBuilder_Build_Banner('Hello', container, editor));
-	
-	
+
 	console.log("Viewport.js: Viewport Viewport.Helpers");
 	
 	var renderer = null;
