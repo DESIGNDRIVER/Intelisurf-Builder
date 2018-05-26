@@ -8,12 +8,12 @@
  * @constructor
  */
 
-var AddAnimationCommand = function ( animation ) {
+var AddAnimationCommand = function ( key, animation ) {
 
 	Command.call( this );
 
 	this.type = 'AddAnimationCommand';
-	this.key = THREE.Math.generateUUID();
+	this.key = key;
 	this.animation = animation;
 	if ( this.animation !== undefined ) {
 
@@ -26,10 +26,9 @@ var AddAnimationCommand = function ( animation ) {
 AddAnimationCommand.prototype = {
 
 	execute: function () {
-
+		
+		this.editor.removeAnimation( this.key );
 		this.editor.addAnimation( this.key, this.animation );
-
-
 	},
 
 	undo: function () {

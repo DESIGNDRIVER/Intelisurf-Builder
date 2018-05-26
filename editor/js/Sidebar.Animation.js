@@ -13,11 +13,14 @@ Sidebar.Animation = function ( editor ) {
 	var currFrame = "Start";
 	var container = new UI.Panel();
 	var recordingMode = "None";
-	var selectedObject = 'undefined';
+	var selectedObject = undefined;
+	var uuid_key = undefined;
 	
 	var scales = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)];
 	var rotations = [new THREE.Euler(0,0,0), new THREE.Euler(0,0,0)];
 	var positions = [ new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)];
+	
+	editor.signals.newAnimation.add(newAnimation);
 	
 	container.add(new UI.HorizontalRule());
 	
@@ -30,23 +33,32 @@ Sidebar.Animation = function ( editor ) {
 
 	container.add( animationNameRow );
 	
+	// UUID row
+	var animationKeyRow = new UI.Row();
+	animationKeyRow.add( new UI.Text( 'Key' ).setWidth( '90px' ) );
+	var animationKeyDisplay = new UI.Text( uuid_key ).setWidth( '180px' );
+	animationKeyRow.add( animationKeyDisplay );
+	container.add( animationKeyRow );
+	
 	var animationSelectedRow = new UI.Row();
-	var animationSelected = new UI.Text( editor.selected ).setWidth( '150px' ).setFontSize( '12px' );
+	//var animationSelected = new UI.Text( selectedObject ).setWidth( '90px' ).setFontSize( '12px' );
 
 	animationSelectedRow.add( new UI.Text( 'Selected' ).setWidth( '90px' ) );
 	
-	var selected_object_button = new UI.Button( 'Select' ).onClick( function () {
-		selectedObject = editor.selected;
-		animationSelected.setValue(editor.selected.name);
+	var selected_object_button = new UI.Button( 'Undefined' ).setWidth('150px').onClick( function () {
+		if( editor.selected == null  ) { alert( "please choose an object" ); return; }
+		setSelectedObject();
 	} ) ;
 	
-	signals.objectSelected.add(function(object) { 
-		if (selectedObject === undefined) { 
-			selectedObject = object; animationSelected.setValue(editor.selected);
-		}
-	});
+	// TODO: Not sure if this is needed
+//	signals.objectSelected.add(function(object) { 
+//		if (selectedObject === undefined)
+//		{
+//			selectedObject = object; selected_object_button.setLabel(editor.selected);
+//		}
+//	});
 	
-	animationSelectedRow.add( animationSelected );
+	//animationSelectedRow.add( animationSelected );
 	animationSelectedRow.add( selected_object_button );
 	
 	container.add( animationSelectedRow );
@@ -111,7 +123,7 @@ Sidebar.Animation = function ( editor ) {
 	
 	recordingRow.add( new UI.Text( 'Recording' ).setWidth( '90px' ) );
 	
-	var rec_start_button = new UI.Button( 'START' ).onClick( function () {
+	var rec_start_button = new UI.Button( 'RECORD' ).onClick( function () {
 		if (recordingMode == "Start")
 			recordingMode = "None";
 		else
@@ -121,34 +133,11 @@ Sidebar.Animation = function ( editor ) {
 	} ) ;
 	
 	recordingRow.add(rec_start_button);
-	
-//	var rec_end_button = new UI.Button( 'END' ).onClick( function () {
-//		if (recordingMode == "End")
-//			recordingMode = "None";
-//		else
-//			recordingMode = "End";
-//		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-//		signals.recordingModeChanged.dispatch( 'End' );
-//	} ) ;
-//	
-//	recordingRow.add(rec_end_button);
-//	
-//	var rec_none_button = new UI.Button( 'UI ONLY' ).onClick( function () {
-//		recordingMode = "None";
-//		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-//		signals.recordingModeChanged.dispatch( 'None' );
-//	} );
-//	
-//	rec_none_button.dom.classList.add( 'selected' );
-//	
-//	recordingRow.add(rec_none_button);
-	
+
 	signals.recordingModeChanged.add( function ( mode ) {
 		console.log("Sidebar.Animation.js: recordingModeChanged: " + mode);
 		rec_start_button.dom.classList.remove( 'selectedred' );
-//		rec_end_button.dom.classList.remove( 'selectedred' );
-//		rec_none_button.dom.classList.remove( 'selected' );
-
+		
 		switch ( mode ) {
 			case 'Start': rec_start_button.dom.classList.add( 'selectedred' ); break;
 		}
@@ -216,12 +205,67 @@ Sidebar.Animation = function ( editor ) {
 
 	console.log("Sidebar.Animation.js: Sidebar.Animation added UI");
 
-	// Position update handler
+	function newUUID()
+	{
+		uuid_key = THREE.Math.generateUUID();
+		animationKeyDisplay.setValue(uuid_key);
+	}
+	
+	function setSelectedObject()
+	{
+		console.log("Sidebar.Animation.js: setSelectedObject");
+		console.log(selectedObject);
+		selectedObject = editor.selected;
+    	selected_object_button.setLabel(editor.selected.name);
+	}
+	
+    function newAnimation()
+    {
+    	console.log("Sidebar.Animation.js: newAnimation setting values begin");
+    	newUUID();
+    	setSelectedObject();
+    	
+    	console.log("Sidebar.Animation.js: newAnimation setting current UI values");
+    	PositionX.setValue( selectedObject.position.x );
+		PositionY.setValue( selectedObject.position.y );
+		PositionZ.setValue( selectedObject.position.z );
+		rotationX.setValue( selectedObject.rotation.x );
+		rotationY.setValue( selectedObject.rotation.y );
+		rotationZ.setValue( selectedObject.rotation.z );
+		scaleX.setValue( selectedObject.scale.x );
+		scaleY.setValue( selectedObject.scale.y );
+		scaleZ.setValue( selectedObject.scale.z );
+		scaleLock.setValue(true);
+		
+		console.log("Sidebar.Animation.js: newAnimation setting current UI timing values");
+		duration.setValue(1.0);
+		repeat.setValue(0);
+		delay.setValue(0); 
+		
+		console.log("Sidebar.Animation.js: newAnimation setting array values");
+		
+		for(var i = 0; i < positions.length; i++)
+		{
+			positions[i].x = selectedObject.position.x;
+			positions[i].y = selectedObject.position.y;
+			positions[i].z = selectedObject.position.z;
+			rotations[i].x = selectedObject.rotation.x;
+			rotations[i].y = selectedObject.rotation.y;
+			rotations[i].z = selectedObject.rotation.z;
+			scales[i].x = selectedObject.scale.x;
+			scales[i].y = selectedObject.scale.y;
+			scales[i].z = selectedObject.scale.z;
+		}
+		
+		
+		storeAnimation();
+		console.log("Sidebar.Animation.js: newAnimation setting values end");
+    }
 	
 	function updatePosition() {
 		console.log("Sidebar.Animation.js: Update Position");
 
-		var object = editor.selected;
+		var object = selectedObject;
 		if ( object !== null ) {
 			var newPosition = new THREE.Vector3( PositionX.getValue(), PositionY.getValue(), PositionZ.getValue() );
 			
@@ -234,12 +278,13 @@ Sidebar.Animation = function ( editor ) {
 			}
 		}
 		
+		storeAnimation();
 		console.log("Sidebar.Animation.js: updatePosition: " + animationFrame.getValue());
 	}
 	
 	// Rotation update handler 
 	function updateRotation() {
-		var object = editor.selected;
+		var object = selectedObject;
 		if ( object !== null ) {
 			var newRotation = new THREE.Euler( rotationX.getValue() * THREE.Math.DEG2RAD, rotationY.getValue() * THREE.Math.DEG2RAD, rotationZ.getValue() * THREE.Math.DEG2RAD );
 			rotations[animationFrame.getValue()] = newRotation;
@@ -250,6 +295,7 @@ Sidebar.Animation = function ( editor ) {
 			}
 		}
 		
+		storeAnimation();
 		console.log("Sidebar.Animation.js: updatePosition: " + animationFrame.getValue());
 	}
 	
@@ -259,7 +305,7 @@ Sidebar.Animation = function ( editor ) {
 		console.log("update scale: " + scaleLock.getValue());
 		console.log(evt);
 		
-		var object = editor.selected;
+		var object = selectedObject;
 		if ( object == null )  return;
 		var newScale = null;
 		
@@ -300,6 +346,7 @@ Sidebar.Animation = function ( editor ) {
 			object.scale.copy( newScale );
 			object.updateMatrixWorld( true );
 			signals.objectChanged.dispatch( object );
+			storeAnimation();
 		}
 	}
 
@@ -319,7 +366,11 @@ Sidebar.Animation = function ( editor ) {
 		scaleX.setValue(scales[i].x);
 		scaleY.setValue(scales[i].y);
 		scaleZ.setValue(scales[i].z);
-	
+		
+		updatePosition();
+		updateRotation();
+		updateScale(null);
+		
 		console.log("Sidebar.Animation.js: Sidebar.Animation updateFrame end");
 	}
 	
@@ -343,7 +394,7 @@ Sidebar.Animation = function ( editor ) {
 	function play(){
 		console.log("Sidebar.Animation.js: Sidebar.Animation play start");
 		
-		var object = editor.selected;
+		var object = selectedObject;
 		console.log(object);
 		if( currAnimationType == null) { alert( "please choose an animation type" ); return; }
 		if( object == null  ) { alert( "please choose an object" ); return; }
@@ -424,7 +475,7 @@ Sidebar.Animation = function ( editor ) {
 		
 		console.log("Sidebar.Animation.js: Sidebar.Animation storeAnimation begin");
 		
-		var object = editor.selected;
+		var object = selectedObject;
 		
 		if( currAnimationType == null ) { alert( "please choose an animation type" ); return; }
 		if( object == null  ) { alert( "please choose an object" ); return; }
@@ -465,7 +516,7 @@ Sidebar.Animation = function ( editor ) {
 		
 		console.log("Sidebar.Animation.js: Sidebar.Animation storeAnimation execute add animation");
 		
-		editor.execute( new AddAnimationCommand( new Animation( name, object.uuid, currAnimationType, parentAnimation, startType, delayTime, repeatTime, durationTime, fromPos, toPos, fromRot, toRot, fromSca, toSca ) ) );
+		editor.execute( new AddAnimationCommand( uuid_key, new Animation( name, object.uuid, currAnimationType, parentAnimation, startType, delayTime, repeatTime, durationTime, fromPos, toPos, fromRot, toRot, fromSca, toSca ) ) );
 	
 		console.log("Sidebar.Animation.js: Sidebar.Animation storeAnimation end");
 	}

@@ -4,6 +4,8 @@
 
 Sidebar.CreatedAnimations = function ( editor ) {
 
+	console.log("Sidebar.CreatedAnimations.js: Begin");
+	
 	var signals = editor.signals;
 	var animationPlayer = editor.animationPlayer;
 
@@ -33,7 +35,19 @@ Sidebar.CreatedAnimations = function ( editor ) {
 
 	}
 
+	var createRow = new UI.Row();
 
+	//play
+	createRow.add( new UI.Button( 'CREATE ANIMATION' ).onClick( function () {
+		if( editor.selected == null  ) { alert( "Please select an object to animate" ); return; }
+		
+		console.log("Sidebar.CreatedAnimations.js: CREATE ANIMATION");
+		console.log(this);
+		
+		editor.signals.newAnimation.dispatch();
+	} ) );
+	
+	container.add( createRow );
 
 	var outliner = new UI.Outliner( editor );
 	outliner.setId( 'outliner' );
@@ -54,7 +68,13 @@ Sidebar.CreatedAnimations = function ( editor ) {
 	var manageRow = new UI.Row();
 
 	//play
-	manageRow.add( new UI.Button( 'PLAY' ).onClick( function () {
+	manageRow.add( new UI.Button( 'PREVIEW' ).onClick( function () {
+		console.log("play start");
+		animationPlayer.playAllAnimations();
+	} ) );
+	
+	//play
+	manageRow.add( new UI.Button( 'EDIT' ).onClick( function () {
 		console.log("play start");
 		animationPlayer.playAllAnimations();
 	} ) );
@@ -129,6 +149,8 @@ Sidebar.CreatedAnimations = function ( editor ) {
 	// 	outliner.setValue( object !== null ? object.id : null );
 
 	// } );
+	
+	console.log("Sidebar.CreatedAnimations.js: End");
 
 	return container;
 
