@@ -717,11 +717,11 @@ Editor.prototype = {
 		console.log(json.scene);
 		this.setScene( loader.parse( json.scene ), json.background);
 		
-		console.log("Editor.js: fromJSON: Config");
-		this.config.setKey( UIBuilder_Keys_Banner_Enabled, json.project.ui.bannerenabled);
-		this.config.setKey( UIBuilder_Keys_Banner_Image, json.project.ui.bannerimage);
-		this.config.setKey('project/vr', json.project.vr);
-		this.config.setKey('project/title', json.project.title);
+		//console.log("Editor.js: fromJSON: Config: setEnabled: " + json.project.ui.bannerenabled);
+		//this.config.setKey( UIBuilder_Keys_Banner_Enabled, json.project.ui.bannerenabled);
+		//this.config.setKey( UIBuilder_Keys_Banner_Image, json.project.ui.bannerimage);
+		//this.config.setKey('project/vr', json.project.vr);
+		//this.config.setKey('project/title', json.project.title);
 		
 		console.log("Editor.js: fromJSON: End");
 		

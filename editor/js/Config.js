@@ -10,6 +10,8 @@ var Config = function ( name ) {
 
 		'project/title': '',
 		'project/editable': false,
+		'project/ui/banner/enabled': false,
+		'project/ui/banner/image': '',
 
 		'project/renderer': 'WebGLRenderer',
 		'project/renderer/antialias': true,
@@ -19,8 +21,7 @@ var Config = function ( name ) {
 
 		'project/vr': false,
 		
-		'project/ui/banner/enabled': false,
-		'project/ui/banner/image': '',
+		
 
 		'settings/history': false
 	};

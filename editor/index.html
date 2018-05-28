@@ -232,15 +232,21 @@
 				
 				editor.storage.get( function ( state ) {
 
-					console.log("index.html: Editor Storage Get Begin:");
+					console.log("index.html: Editor Storage Get Begin: getEnabled=" + editor.config.getKey( 'project/ui/banner/enabled'));
 					
 					if ( isLoadingFromHash ) return;
 
 					if ( state !== undefined ) {
+						console.log("index.html: Editor Storage Get Begin fromJSON Begin");
+						console.log(state);
 						editor.fromJSON( state );
+						console.log("index.html: Editor Storage Get Begin fromJSON End");
 					}
 					else
+					{
+						console.log("index.html: Editor Storage Get Begin Clear");
 						editor.clear();
+					}
 
 					var selected = editor.config.getKey( 'selected' );
 
@@ -248,7 +254,7 @@
 						editor.selectByUuid( selected );
 					}
 					
-					console.log("index.html: Editor Storage Get End: " + editor.config.getKey( 'project/ui/banner/enabled') );
+					console.log("index.html: Editor Storage Get End: getEnabled=" + editor.config.getKey( 'project/ui/banner/enabled') );
 
 					editor.signals.editorStorageGet.dispatch();
 				} );
@@ -259,7 +265,7 @@
 
 				function saveState( scene ) {
 
-					console.log("index.html: Editor Storage SaveState");
+					console.log("index.html: Editor Storage SaveState: getEnabled=" + editor.config.getKey('project/ui/banner/enabled'));
 					
 					if ( editor.config.getKey( 'autosave' ) === false ) {
 						return;
@@ -273,11 +279,14 @@
 
 						timeout = setTimeout( function () {
 
+							console.log("index.html: Editor Storage SaveState timeout function begin");
+							console.log(editor.toJSON());
 							editor.storage.set( editor.toJSON() );
 
 							editor.signals.savingFinished.dispatch();
+							console.log("index.html: Editor Storage SaveState timeout function end");
 
-						}, 100 );
+						}, 200 );
 
 					}, 1000 );
 
@@ -296,7 +305,7 @@
 				signals.scriptChanged.add( saveState );
 				signals.animationChanged.add( saveState );
 				signals.historyChanged.add( saveState );
-				signals.thereWasAChangeThatWeWouldLikeToSave.add( saveState );
+				signals.thereWasAChangeThatWeWouldLikeToSave.add( function() { console.log("[SAVE STATE BEGIN]");saveState();console.log("[SAVE STATE END]");} );
 
 				signals.showModal.add( function ( content ) {
 					//console.log("showModal");

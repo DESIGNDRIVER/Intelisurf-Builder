@@ -119,7 +119,7 @@ Sidebar.Project = function ( editor ) {
 	var rendererShadows = new UI.THREE.Boolean( config.getKey( 'project/renderer/shadows' )).onChange( function () {
 
 		config.setKey( 'project/renderer/shadows', this.getValue() );
-		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
+		//signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 		updateRenderer();
 
 	} );
@@ -152,67 +152,74 @@ Sidebar.Project = function ( editor ) {
 	var rule = new UI.HorizontalRule();
 	container.add(rule);
 	
-	//
-	var uibannerEnvMapRow = new UI.Row();
-	var uibannerEnvMapEnabled = new UI.Checkbox( config.getKey(UIBuilder_Keys_Banner_Enabled) ).onChange( envMapUpdate );
-	var uibannerEnvMap = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( envMapUpdate );
-	
-	console.log("Sidebar.Project.js: setting uibannerdomhidden: " + !uibannerEnvMapEnabled.getValue());
-	uibanner.dom.hidden = !uibannerEnvMapEnabled.getValue();
-
-	uibannerEnvMapRow.add( new UI.Text( 'UI Banner' ).setWidth( '90px' ) );
-	uibannerEnvMapRow.add( uibannerEnvMapEnabled );
-	uibannerEnvMapRow.add( uibannerEnvMap );
-
-	container.add( uibannerEnvMapRow );
+	// UI BANNER
+	console.log("Sidebar.Project.js: adding uibanner UI uibanner.getEnabled()=" + uibanner.getEnabled());
+	console.log(uibanner);
+	var uibannerRow = new UI.Row();
+	{
+		var uibannerEnabled = new UI.Checkbox( uibanner.getEnabled()).onChange( uibannerUpdate );
+		var uibannerTexture = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( uibannerUpdate );
+		console.log("Sidebar.Project.js: setting uibannerdomhidden: " + !uibannerEnabled.getValue());
+		uibanner.dom.hidden = !uibannerEnabled.getValue();
+		uibannerRow.add( new UI.Text( 'UI Banner' ).setWidth( '90px' ) );
+		uibannerRow.add( uibannerEnabled );
+		uibannerRow.add( uibannerTexture );
+	}
+	container.add( uibannerRow );
 
 	signals.editorStorageGet.add(updateFromConfig);
 	
-	function envMapUpdate(){
-
-        console.log("Sidebar.Project.js: envMapUpdate Begin: " + config.getKey(UIBuilder_Keys_Banner_Enabled));
-        console.log(uibannerEnvMap);
+	function uibannerUpdate(){
+		// Update UI Banner based on what is happening in the UI
+        console.log("Sidebar.Project.js: uibannerUpdate Begin: uibanner.getEnabled=" + uibanner.getEnabled());
+        console.log(uibannerTexture);
         console.log(uibanner);
         
-        var uibanner_enabled = uibannerEnvMapEnabled.getValue();
+        // Get Enabled Value From UI Control
+        var uibanner_enabled = uibannerEnabled.getValue();
         
-        if (uibannerEnvMap.texture.image != undefined)
-        	uibanner.setValue(uibannerEnvMap.texture.image.src);
+        // Get Texture Value From UI Control
+        var uibanner_texture = uibannerTexture.texture.image;
         
-        config.setKey( UIBuilder_Keys_Banner_Enabled, uibanner_enabled);
+        // Save Enabled Value in Config
+        uibanner.setEnabled(uibanner_enabled);
         
-        if (uibannerEnvMap.texture.image != undefined)
-        	config.setKey( UIBuilder_Keys_Banner_Image, uibannerEnvMap.texture.image.src);
+        // Save Texture Value in Config
+        if (uibanner_texture != undefined)
+        	uibanner.setImage(uibanner_texture);
         
+        // Set Value of Image Into Viewport
+        if (uibannerTexture.texture.image != undefined)
+        	uibanner.setValue(uibannerTexture.texture.image.src);
+       
+        // Set UI Control Hidden
         uibanner.dom.hidden = !uibanner_enabled;
+        
+        console.log("Sidebar.Project.js: uibannerUpdate End: uibanner.getEnabled=" + uibanner.getEnabled());
         
 		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 		
-		console.log("Sidebar.Project.js: envMapUpdate End: " + config.getKey( UIBuilder_Keys_Banner_Enabled));
-
 		updateRenderer();
 	}
 	
 	function updateFromConfig()
 	{
-		console.log("Sidebar.Project.js: updateFromConfig: " + config.getKey( 'project/ui/banner/enabled'));
-		//console.log(config.getKey( 'project/ui/banner/image'));
-		uibannerEnvMapEnabled.setValue(config.getKey( 'project/ui/banner/enabled'));
+		// Read Config and update the user interface and viewport based on what is in the config store
+		console.log("Sidebar.Project.js: updateFromConfig: Begin: uibanner.getEnabled()="+uibanner.getEnabled());
+		uibannerEnabled.setValue(uibanner.getEnabled());
 	
 		var image = document.createElement( 'img' );
-		image.src = config.getKey( 'project/ui/banner/image');
+		image.src = uibanner.getImage();
 		var texture = new Object();
 		texture.image = image;
+		uibannerTexture.setValue(texture);
 		
-		console.log("Sidebar.Project.js: updateFromConfig: Mid" );
-		console.log(texture);
+		if (uibannerTexture.texture.image != undefined)
+        	uibanner.setValue(uibannerTexture.texture.image.src);
 		
-		uibannerEnvMap.setValue(texture);
+		uibanner.dom.hidden = !uibanner.getEnabled();
 		
-		if (uibannerEnvMap.texture.image != undefined)
-        	uibanner.setValue(uibannerEnvMap.texture.image.src);
-		
-		console.log("Sidebar.Project.js: updateFromConfig: End: " + config.getKey( 'project/ui/banner/enabled'));
+		console.log("Sidebar.Project.js: updateFromConfig: End: uibannerHidden=" + uibanner.dom.hidden);
 	}
 
 	function updateRenderer() {
