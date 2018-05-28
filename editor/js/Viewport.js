@@ -353,9 +353,10 @@ var Viewport = function ( editor ) {
 		render();
 
 	} );
-	signals.stopAnimation.add( function () {
+	
+	signals.stopAnimation.add( function (full_preview) {
 
-		stopAnimate();
+		stopAnimate(full_preview);
 
 	} );
 
@@ -560,34 +561,20 @@ var Viewport = function ( editor ) {
 
 	//
 
-	signals.startAnimation.add( function () {
-		if (animationCamera == undefined ) {
-
-			animationCamera = editor.scene.getObjectByName( "animationCamera");
-
+	signals.startAnimation.add( function (full_preview) {
+		if (full_preview)
+		{
+			if (animationCamera == undefined ) {
+	
+				animationCamera = editor.scene.getObjectByName( "animationCamera");
+	
+			}
+			preCamera = editor.camera.clone();
+			editor.removeHelper(animationCamera);
+			editor.camera = animationCamera.clone();
 		}
-		preCamera = editor.camera.clone();
-		editor.removeHelper(animationCamera);
-		editor.camera = animationCamera.clone();
-		
 		animate();
-
 	} );
-
-	signals.startAllAnimations.add( function () {
-		if (animationCamera == undefined ) {
-
-			animationCamera = editor.scene.getObjectByName( "animationCamera");
-
-		}
-		preCamera = editor.camera.clone();
-		editor.removeHelper(animationCamera);
-		editor.camera = animationCamera.clone();
-		
-		animate();
-
-	} );
-
 
 	// signals.enterAnimationCamera.add(function(bool){
 	// 	if( bool){
@@ -605,24 +592,25 @@ var Viewport = function ( editor ) {
 	var pauseAt = 0;
 	var recorded = false;
 	var paused = false;
+	
 	signals.pauseAnimations.add(function(){
 		if(paused == false) paused = true;
 		else paused = false;
 
 	});
 
-
-
-	function stopAnimate() {
-		console.log("animationStoped");
+	function stopAnimate(full_preview) {
+		console.log("animationStoped: fullPreview: " + full_preview);
 		paused = false;
 		var delta = 0;
 		var pauseAt = 0;
 		var recorded = false;
-		editor.addHelper(animationCamera);
-		editor.camera = preCamera.clone();
+		if (full_preview === true)
+		{
+			editor.addHelper(animationCamera);
+			editor.camera = preCamera.clone();
+		}
 		cancelAnimationFrame( animationLoopId );
-
 	}
 	
 	function animate(timestamp) {

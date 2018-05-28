@@ -489,15 +489,14 @@ Sidebar.Animation = function ( editor ) {
 				//signals.objectChanged.dispatch(object );
 
 			}).onComplete(function(){
-
-				signals.stopAnimation.dispatch();
+				signals.stopAnimation.dispatch(full_preview);
 				object.position.copy( startPosition );
 				object.updateMatrixWorld( true );
 				//signals.objectChanged.dispatch(object );
 			})
 			.start();
-			if (full_preview === true)
-				signals.startAnimation.dispatch( );
+			
+			signals.startAnimation.dispatch(full_preview);
 
 			// 2. Rotate
 			var startRotation = new THREE.Euler( rotations[0].x * THREE.Math.DEG2RAD, rotations[0].y * THREE.Math.DEG2RAD, rotations[0].z * THREE.Math.DEG2RAD );
@@ -511,15 +510,15 @@ Sidebar.Animation = function ( editor ) {
 				object.updateMatrixWorld( true );
 				//signals.objectChanged.dispatch( object );
 			}).onComplete(function(){
-				signals.stopAnimation.dispatch();
+				signals.stopAnimation.dispatch(full_preview);
 				object.rotation.copy( startRotation );
 				object.updateMatrixWorld( true );
 				//signals.objectChanged.dispatch( object );
 			})
 			.start();
 			editor.deselect();
-			if (full_preview === true)
-				signals.startAnimation.dispatch( );
+
+			signals.startAnimation.dispatch(full_preview);
 			
 			// 3. Scale
 			var startScale = new THREE.Vector3( scales[0].x, scales[0].y, scales[0].z);
@@ -532,13 +531,13 @@ Sidebar.Animation = function ( editor ) {
 				object.scale.copy( newScale );
 				object.updateMatrixWorld( true );
 			}).onComplete(function(){
-				signals.stopAnimation.dispatch();
+				signals.stopAnimation.dispatch(full_preview);
 				object.scale.copy( startScale );
 				object.updateMatrixWorld( true );
 			})
 			.start();
-			if (full_preview === true)
-				signals.startAnimation.dispatch( );
+
+			signals.startAnimation.dispatch(full_preview);
 		}
 		
 		console.log("Sidebar.Animation.js: Sidebar.Animation play end");
