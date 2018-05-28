@@ -164,6 +164,7 @@ Sidebar.Project = function ( editor ) {
 		uibannerRow.add( new UI.Text( 'UI Banner' ).setWidth( '90px' ) );
 		uibannerRow.add( uibannerEnabled );
 		uibannerRow.add( uibannerTexture );
+		signals.editorCleared.add(updateFromConfig);
 	}
 	container.add( uibannerRow );
 
