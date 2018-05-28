@@ -179,7 +179,7 @@ Sidebar.Project = function ( editor ) {
         var uibanner_enabled = uibannerEnabled.getValue();
         
         // Get Texture Value From UI Control
-        var uibanner_texture = uibannerTexture.texture.image;
+        var uibanner_texture = uibannerTexture.texture.image.src;
         
         // Save Enabled Value in Config
         uibanner.setEnabled(uibanner_enabled);
@@ -190,7 +190,10 @@ Sidebar.Project = function ( editor ) {
         
         // Set Value of Image Into Viewport
         if (uibannerTexture.texture.image != undefined)
+        {
+        	console.log("Sidebar.Project.js: uibannerUpdate: imageSrc=" + uibannerTexture.texture.image.src);
         	uibanner.setValue(uibannerTexture.texture.image.src);
+		}
        
         // Set UI Control Hidden
         uibanner.dom.hidden = !uibanner_enabled;

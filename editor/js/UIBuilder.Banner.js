@@ -48,6 +48,7 @@ var UIBuilder_Build_Banner = function (content, container, editor) {
 
 	function setImage(image)
 	{
+		console.log("UIBuilderBanner.js: setImage: " + image);
 		editor.config.setKey(UIBuilder_Keys_Banner_Image, image);
 	}
 }
