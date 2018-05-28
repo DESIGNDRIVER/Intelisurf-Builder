@@ -207,7 +207,7 @@ Editor.prototype = {
 			
 			console.log("Editor.js: setDefaultBackground loaded: " + texture);
 			
-			var geometry = new THREE.SphereBufferGeometry( 1000, 8, 6, 0, Math.PI * 2, 0, Math.PI );
+			var geometry = new THREE.SphereBufferGeometry( 800, 8, 6, 0, Math.PI * 2, 0, Math.PI );
 			var material = new THREE.MeshBasicMaterial();
 			material.side = THREE.DoubleSide;
 			material.map = texture;
