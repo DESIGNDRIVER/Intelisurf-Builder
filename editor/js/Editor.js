@@ -83,6 +83,7 @@ var Editor = function () {
 		startAnimation: new Signal(),
 		startAllAnimations : new Signal(),
 		newAnimation: new Signal(),
+		editAnimation: new Signal(),
 		animationMode: new Signal(),
 		stopAnimation: new Signal(),
 		stopAnimations: new Signal(),

@@ -52,48 +52,66 @@ Sidebar.CreatedAnimations = function ( editor ) {
 	var outliner = new UI.Outliner( editor );
 	outliner.setId( 'outliner' );
 	outliner.onChange( function () {
-
 		console.log( editor.animations.animations[outliner.getValue() ]);
-		
-
 	} );
-	// outliner.onDblClick( function () {
-
-	// 	editor.focusById( parseInt( outliner.getValue() ) );
-
-	// } );
+	outliner.onDblClick( function () {
+		//editor.focusById( parseInt( outliner.getValue() ) );
+		clickedEditAnimation();
+ 	} );
+	
 	container.add( outliner );
 	container.add( new UI.Break() );
 
 	var manageRow = new UI.Row();
 
-	//play
 	manageRow.add( new UI.Button( 'PREVIEW' ).onClick( function () {
 		console.log("play start");
 		animationPlayer.playAllAnimations();
 	} ) );
 	
-	//play
 	manageRow.add( new UI.Button( 'EDIT' ).onClick( function () {
-		console.log("play start");
-		animationPlayer.playAllAnimations();
+		clickedEditAnimation();
 	} ) );
 
-
-	//delete animation
 	manageRow.add( new UI.Button( 'DELETE' ).setMarginLeft( '4px' ).onClick( function () {
 		deleteAnimation();
 	} ) );
 	
-
 	container.add( manageRow );
-
 
 	function deleteAnimation ( ) {
 		var key = outliner.getValue();
 		editor.execute( new RemoveAnimationCommand( key ) );
 
 	}
+	
+	function clickedEditAnimation() {
+		console.log("Sidebar.CreatedAnimations.js: EDIT ANIMATION: " + outliner.getValue());
+		
+		if (outliner.getValue() === undefined)
+		{
+			alert( "Please select an animtion to edit" );
+			return;
+		}
+		
+		var animation_to_edit = editor.animations.animations[outliner.getValue()];
+		
+		console.log(animation_to_edit);
+		
+		if ((animation_to_edit === null)||(animation_to_edit === undefined))
+		{
+			alert( "Invalid animation selected" );
+			console.log('Invalid Animation');
+			console.log(animation_to_edit);
+			return;
+		}	
+		
+		console.log("Sidebar.CreatedAnimations.js: EDIT ANIMATION: dispatch editAnimation");
+
+		editor.signals.editAnimation.dispatch(outliner.getValue(), animation_to_edit);
+	}
+	
+	
 	// refreshUI
 
 	function refreshUI() {

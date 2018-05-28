@@ -21,50 +21,28 @@ Sidebar.Animation = function ( editor ) {
 	var positions = [ new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)];
 	
 	editor.signals.newAnimation.add(newAnimation);
+	editor.signals.editAnimation.add(editAnimation);
 	
 	container.add(new UI.HorizontalRule());
 	
 	// name
 	var animationNameRow = new UI.Row();
-	var animationName = new UI.Input().setWidth( '150px' ).setFontSize( '12px' );
+	var animationName = new UI.Input().setWidth( '150px' ).setFontSize( '12px' ).onClick( storeAnimation ).onChange(storeAnimation);
 
 	animationNameRow.add( new UI.Text( 'Name' ).setWidth( '90px' ) );
 	animationNameRow.add( animationName );
 
 	container.add( animationNameRow );
 	
-	// UUID row
+	
 	var animationKeyRow = new UI.Row();
 	animationKeyRow.add( new UI.Text( 'Key' ).setWidth( '90px' ) );
 	var animationKeyDisplay = new UI.Text( uuid_key ).setWidth( '180px' );
 	animationKeyRow.add( animationKeyDisplay );
-	container.add( animationKeyRow );
+	// FIXME: UUID row is currently disabled but kept since is useful for debug
+//	container.add( animationKeyRow );
 	
-	var animationSelectedRow = new UI.Row();
-	//var animationSelected = new UI.Text( selectedObject ).setWidth( '90px' ).setFontSize( '12px' );
-
-	animationSelectedRow.add( new UI.Text( 'Selected' ).setWidth( '90px' ) );
-	
-	var selected_object_button = new UI.Button( 'Undefined' ).setWidth('150px').onClick( function () {
-		if( editor.selected == null  ) { alert( "please choose an object" ); return; }
-		setSelectedObject();
-	} ) ;
-	
-	// TODO: Not sure if this is needed
-//	signals.objectSelected.add(function(object) { 
-//		if (selectedObject === undefined)
-//		{
-//			selectedObject = object; selected_object_button.setLabel(editor.selected);
-//		}
-//	});
-	
-	//animationSelectedRow.add( animationSelected );
-	animationSelectedRow.add( selected_object_button );
-	
-	container.add( animationSelectedRow );
-
-	// frame
-	
+	// Animation Frame (Currently limited to 0 & 1 for start and end but will be expanded in the future)
 	var animationFrameRow = new UI.Row();
 	var animationFrame = new UI.Select().setOptions( {
 
@@ -78,8 +56,7 @@ Sidebar.Animation = function ( editor ) {
 
 	container.add( animationFrameRow );
 	
-	// type
-
+	// Type will be used in the future for different types of animation
 	var animationClassRow = new UI.Row();
 	var animationClass = new UI.Select().setOptions( {
 
@@ -87,20 +64,19 @@ Sidebar.Animation = function ( editor ) {
 		
 	} ).setWidth( '150px' ).setFontSize( '12px' ).onChange( update );
 
-	animationClassRow.add( new UI.Text( 'Animation Type' ).setWidth( '100px' ) );
-	animationClassRow.add( animationClass );
-
-	container.add( animationClassRow );
-	
-	console.log("Sidebar.Animation.js: Sidebar.Animation aniamtionClass: " + animationClass);
-	console.log(animationClass);
+	// TODO: Re-enable this when we can actually change animation type
+	//animationClassRow.add( new UI.Text( 'Animation Type' ).setWidth( '100px' ) );
+	//animationClassRow.add( animationClass );
+	//container.add( animationClassRow );
+	//console.log("Sidebar.Animation.js: Sidebar.Animation animationClass: " + animationClass);
+	//console.log(animationClass);
 
 	var parentAnimations = new UI.Select().setWidth( '130px' ).setMarginLeft( '4px' ).setFontSize( '12px' );
 
 	// delay repeat row
 	var repeatAndDelayRow = new UI.Row();
-	var delay = new UI.Number().setWidth( '50px' )
-	var repeat = new UI.Integer().setWidth( '50px' )
+	var delay = new UI.Number().setWidth( '50px' ).onClick( storeAnimation ).onChange(storeAnimation);
+	var repeat = new UI.Integer().setWidth( '50px' ).onClick( storeAnimation ).onChange(storeAnimation);
 
 	repeatAndDelayRow.add( new UI.Text( 'Repeat' ).setWidth( '70px' ) );
 	repeatAndDelayRow.add( repeat );
@@ -110,40 +86,12 @@ Sidebar.Animation = function ( editor ) {
 	
 	//start/end at
 	var startAndEndTimeRow = new UI.Row();
-	var duration = new UI.Number().setWidth( '50px' ).setValue(1);
+	var duration = new UI.Number().setWidth( '50px' ).setValue(1).onClick( storeAnimation ).onChange(storeAnimation);
 	
 	startAndEndTimeRow.add( new UI.Text( 'Duration' ).setWidth( '70px' ) );
 	startAndEndTimeRow.add( duration );
 
 	container.add( startAndEndTimeRow );
-	
-	container.add(new UI.HorizontalRule());
-	
-	var recordingRow = new UI.Row();
-	
-	recordingRow.add( new UI.Text( 'Recording' ).setWidth( '90px' ) );
-	
-	var rec_start_button = new UI.Button( 'RECORD' ).onClick( function () {
-		if (recordingMode == "Start")
-			recordingMode = "None";
-		else
-			recordingMode = "Start";
-		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
-		signals.recordingModeChanged.dispatch( recordingMode );
-	} ) ;
-	
-	recordingRow.add(rec_start_button);
-
-	signals.recordingModeChanged.add( function ( mode ) {
-		console.log("Sidebar.Animation.js: recordingModeChanged: " + mode);
-		rec_start_button.dom.classList.remove( 'selectedred' );
-		
-		switch ( mode ) {
-			case 'Start': rec_start_button.dom.classList.add( 'selectedred' ); break;
-		}
-	} );
-	
-	container.add( recordingRow );
 	
 	container.add(new UI.HorizontalRule());
 	
@@ -189,16 +137,54 @@ Sidebar.Animation = function ( editor ) {
 	
 	console.log("Sidebar.Animation.js: Sidebar.Animation start parameters");
 	
+	var animationSelectedRow = new UI.Row();
+	animationSelectedRow.add( new UI.Text( 'Object' ).setWidth( '90px' ) );
+	
+	var selected_object_button = new UI.Button( 'Undefined' ).setWidth('150px').onClick( function () {
+		if( editor.selected == null  ) { alert( "please choose an object" ); return; }
+		setSelectedObject();
+		storeAnimation();
+	} ) ;
+	
+	animationSelectedRow.add( selected_object_button );
+	container.add( animationSelectedRow );
+	
+	container.add(new UI.HorizontalRule());
+	
 	//management row
 	var manageRow = new UI.Row();
 
 	//play
 	manageRow.add( new UI.Button( 'PLAY' ).onClick( function () {
-		play();
+		play(false);
+	} ) );
+
+	manageRow.add( new UI.Button( 'PREVIEW' ).onClick( function () {
+		play(true);
 	} ) );
 	
+	var rec_start_button = new UI.Button( 'RECORD VALUES' ).onClick( function () {
+		if (recordingMode == "Start")
+			recordingMode = "None";
+		else
+			recordingMode = "Start";
+		console.log("Sidebar.Animation.js: RecordingMode: " + recordingMode);
+		signals.recordingModeChanged.dispatch( recordingMode );
+	} ) ;
+	
+	manageRow.add(rec_start_button);
+
+	signals.recordingModeChanged.add( function ( mode ) {
+		console.log("Sidebar.Animation.js: recordingModeChanged: " + mode);
+		rec_start_button.dom.classList.remove( 'selectedred' );
+		
+		switch ( mode ) {
+			case 'Start': rec_start_button.dom.classList.add( 'selectedred' ); break;
+		}
+	} );
+	
 	//confirm
-	manageRow.add( new UI.Button( 'SAVE' ).setMarginLeft( '4px' ).onClick( storeAnimation ));
+//	manageRow.add( new UI.Button( 'SAVE' ).setMarginLeft( '4px' ).onClick( storeAnimation ));
 	container.add( manageRow );
 	
 	container.add(new UI.HorizontalRule());
@@ -213,17 +199,87 @@ Sidebar.Animation = function ( editor ) {
 	
 	function setSelectedObject()
 	{
+		// Handle value setting, UI related stuff also occurs in Sidebar.AnimationMenu.js
 		console.log("Sidebar.Animation.js: setSelectedObject");
 		console.log(selectedObject);
 		selectedObject = editor.selected;
     	selected_object_button.setLabel(editor.selected.name);
 	}
 	
+    function editAnimation(key, the_animation)
+    {
+    	// Handle value setting, UI related stuff also occurs in Sidebar.AnimationMenu.js
+    	console.log('Sidebar.Animation.js editAnimation signal received: ' + key)
+    	console.log(the_animation)
+    	
+    	if ((the_animation != undefined)&&(the_animation != null))
+		{
+    		console.log("Sidebar.Animation.js: editAnimation setting values begin");
+    		uuid_key = key;
+    		editor.selectByUuid(the_animation.objectID);
+    		setSelectedObject();
+    		animationKeyDisplay.setValue(selectedObject.uuid);
+    		
+        	console.log("Sidebar.Animation.js: editAnimation setting current UI values");
+//        	PositionX.setValue( the_animation.fromPos.x );
+//    		PositionY.setValue( the_animation.fromPos.y );
+//    		PositionZ.setValue( the_animation.fromPos.z );
+//    		rotationX.setValue( the_animation.fromRot.x );
+//    		rotationY.setValue( the_animation.fromRot.y );
+//    		rotationZ.setValue( the_animation.fromRot.z );
+//    		scaleX.setValue( the_animation.fromSca.x );
+//    		scaleY.setValue( the_animation.fromSca.y );
+//    		scaleZ.setValue( the_animation.fromSca.z );
+    		scaleLock.setValue(true);
+    		animationName.setValue(the_animation.name)
+    		
+    		console.log("Sidebar.Animation.js: editAnimation setting current UI timing values");
+    		duration.setValue(the_animation.duration);
+    		repeat.setValue(the_animation.repeat);
+    		delay.setValue(the_animation.delay); 
+    		
+    		
+    		console.log("Sidebar.Animation.js: editAnimation setting array values");
+    		
+    		{
+    			positions[0].x = the_animation.fromPos.x;
+    			positions[0].y = the_animation.fromPos.y;
+    			positions[0].z = the_animation.fromPos.z;
+    			rotations[0].x = the_animation.fromRot.x;
+    			rotations[0].y = the_animation.fromRot.y;
+    			rotations[0].z = the_animation.fromRot.z;
+    			scales[0].x = the_animation.fromSca.x;
+    			scales[0].y = the_animation.fromSca.y;
+    			scales[0].z = the_animation.fromSca.z;
+    			
+    			positions[1].x = the_animation.toPos.x;
+    			positions[1].y = the_animation.toPos.y;
+    			positions[1].z = the_animation.toPos.z;
+    			rotations[1].x = the_animation.toRot.x;
+    			rotations[1].y = the_animation.toRot.y;
+    			rotations[1].z = the_animation.toRot.z;
+    			scales[1].x = the_animation.toSca.x;
+    			scales[1].y = the_animation.toSca.y;
+    			scales[1].z = the_animation.toSca.z;
+    		}
+    		
+    		animationFrame.setValue(0);
+    		updateFrame();
+    		
+    		recordingMode = "None";
+    		signals.recordingModeChanged.dispatch( recordingMode );
+    		
+    		console.log("Sidebar.Animation.js: editAnimation setting values end");
+		}
+    }
+	
     function newAnimation()
     {
     	console.log("Sidebar.Animation.js: newAnimation setting values begin");
     	newUUID();
     	setSelectedObject();
+    	
+    	animationName.setValue('new animation');
     	
     	console.log("Sidebar.Animation.js: newAnimation setting current UI values");
     	PositionX.setValue( selectedObject.position.x );
@@ -257,10 +313,24 @@ Sidebar.Animation = function ( editor ) {
 			scales[i].z = selectedObject.scale.z;
 		}
 		
-		
 		storeAnimation();
 		console.log("Sidebar.Animation.js: newAnimation setting values end");
     }
+    
+	function updateBasicParams() {
+		console.log("Sidebar.Animation.js: Update Basic Params");
+		storeAnimation();
+	}
+	
+	function quickUpdateTransformFromUI()
+	{
+		var newRotation = new THREE.Euler( rotationX.getValue() * THREE.Math.DEG2RAD, rotationY.getValue() * THREE.Math.DEG2RAD, rotationZ.getValue() * THREE.Math.DEG2RAD );
+		rotations[animationFrame.getValue()] = newRotation;
+		var newPosition = new THREE.Vector3( PositionX.getValue(), PositionY.getValue(), PositionZ.getValue() );
+		positions[animationFrame.getValue()] = newPosition;
+		newScale = new THREE.Vector3( scaleX.getValue(), scaleY.getValue(), scaleZ.getValue() );
+		scales[animationFrame.getValue()] = newScale;
+	}
 	
 	function updatePosition() {
 		console.log("Sidebar.Animation.js: Update Position");
@@ -391,7 +461,7 @@ Sidebar.Animation = function ( editor ) {
 	}
 
 	// Play Animation 
-	function play(){
+	function play(full_preview){
 		console.log("Sidebar.Animation.js: Sidebar.Animation play start");
 		
 		var object = selectedObject;
@@ -426,7 +496,8 @@ Sidebar.Animation = function ( editor ) {
 				//signals.objectChanged.dispatch(object );
 			})
 			.start();
-			signals.startAnimation.dispatch( );
+			if (full_preview === true)
+				signals.startAnimation.dispatch( );
 
 			// 2. Rotate
 			var startRotation = new THREE.Euler( rotations[0].x * THREE.Math.DEG2RAD, rotations[0].y * THREE.Math.DEG2RAD, rotations[0].z * THREE.Math.DEG2RAD );
@@ -447,7 +518,8 @@ Sidebar.Animation = function ( editor ) {
 			})
 			.start();
 			editor.deselect();
-			signals.startAnimation.dispatch( );
+			if (full_preview === true)
+				signals.startAnimation.dispatch( );
 			
 			// 3. Scale
 			var startScale = new THREE.Vector3( scales[0].x, scales[0].y, scales[0].z);
@@ -465,7 +537,8 @@ Sidebar.Animation = function ( editor ) {
 				object.updateMatrixWorld( true );
 			})
 			.start();
-			signals.startAnimation.dispatch( );
+			if (full_preview === true)
+				signals.startAnimation.dispatch( );
 		}
 		
 		console.log("Sidebar.Animation.js: Sidebar.Animation play end");
@@ -559,8 +632,10 @@ Sidebar.Animation = function ( editor ) {
 			scaleX.setValue( object.scale.x );
 			scaleY.setValue( object.scale.y );
 			scaleZ.setValue( object.scale.z );
-			
+		
 			refreshUI();
+			
+			quickUpdateTransformFromUI();
 			
 			console.log("Sidebar.Animation.js: Sidebar.Animation Start refreshSidebarObject3D end");
 		}

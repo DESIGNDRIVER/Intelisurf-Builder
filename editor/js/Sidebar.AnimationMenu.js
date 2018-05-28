@@ -15,10 +15,27 @@ Sidebar.AnimationMenu = function ( editor ) {
     container.add(tabs);
     
     editor.signals.newAnimation.add(newAnimation);
+    editor.signals.editAnimation.add(editAnimation);
     
     function newAnimation()
     {
+    	// Just handle editor menu selection, value setting occurs in Sidebar.Animation.js
     	select('EDITOR');
+    }
+    
+    function editAnimation(key, animation)
+    {
+    	// Just handle editor menu selection, value setting occurs in Sidebar.Animation.js
+    	console.log('Sidebar.AnimationMenu.js editAnimation signal received: ' + key);
+    	console.log(animation)
+    	
+    	if ((animation != undefined)&&(animation != null))
+		{
+    		console.log('received');
+    		select('EDITOR');
+		}
+    	else
+    		alert( "Please select an animtion to edit" );
     }
     
     function onClick( event ) {
