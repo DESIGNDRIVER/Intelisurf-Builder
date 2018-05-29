@@ -789,6 +789,16 @@ Editor.prototype = {
 				ui: {
 					bannerenabled: this.config.getKey( UIBuilder_Keys_Banner_Enabled ),
 					bannerimage: this.config.getKey( UIBuilder_Keys_Banner_Image ),
+		        	bannertexturename: this.config.getKey( UIBuilder_Keys_Banner_ImageName ),
+		        	bannerheight: this.config.getKey( UIBuilder_Keys_Banner_Height),
+		        	bannercolor: this.config.getKey( UIBuilder_Keys_Banner_BGColor ),
+		        	logoenabled: this.config.getKey( UIBuilder_Keys_Logo_Enabled ),
+		        	logotexture: this.config.getKey( UIBuilder_Keys_Logo_Image ),
+		        	logotexturename: this.config.getKey( UIBuilder_Keys_Logo_ImageName ),
+		        	titleenabled: this.config.getKey( UIBuilder_Keys_Title_Enabled ),
+		        	titletext: this.config.getKey( UIBuilder_Keys_Title_Text ),
+		        	titlesize: this.config.getKey( UIBuilder_Keys_Title_Size ),
+		        	titlecolor: this.config.getKey( UIBuilder_Keys_Title_TextColor),
 				},
 				title: this.config.getKey( 'project/title' )
 			},
