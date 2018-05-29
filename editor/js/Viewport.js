@@ -29,7 +29,7 @@ var Viewport = function ( editor ) {
 	container.add(UIBuilder_Build_Title('Hello', container, editor));
 	
 	console.log("Viewport.js: Viewport Viewport.UIButton");
-	container.add(UIBuilder_Build_Button('Hello', container, editor));
+	container.add(UIBuilder_Build_Button('PLAY', container, editor));
 
 	console.log("Viewport.js: Viewport Viewport.Helpers");
 	

@@ -216,6 +216,82 @@ UI.Panel = function () {
 UI.Panel.prototype = Object.create( UI.Element.prototype );
 UI.Panel.prototype.constructor = UI.Panel;
 
+//Progress, progressbar.js used as a play button
+
+UI.Progress = function ( text, container ) {
+
+	console.log('1');
+	
+	UI.Element.call( this );
+
+	var dom = document.createElement( 'div' );
+	dom.className = 'Panel';
+	
+	console.log('1,1');
+	
+	dom.id = 'progressbar';
+	
+	console.log('2');
+	
+	//var ProgressBar = require('progressbar.js');
+	
+	console.log('3');
+	
+	console.log(ProgressBar);
+	
+	var bar = new ProgressBar.Circle(dom, {
+		  strokeWidth: 8,
+		  easing: 'easeInOut',
+		  duration: 1400,
+		  color: '#33ccFF',
+		  trailColor: '#eee',
+		  trailWidth: 2,
+		  svgStyle: null
+		});
+
+	dom.the_bar = bar;
+	
+	
+	
+	
+	console.log('4');
+	
+	this.dom = dom;
+	this.bar = bar;
+	this.setValue( text );
+	
+	console.log('5');
+	bar.animate(0.75);
+	console.log(dom);
+	console.log(bar);
+	bar.text.style.color = 'black';
+	bar.text.style.fontSize = '22px';
+	console.log('6');
+	return this;
+
+};
+
+UI.Progress.prototype = Object.create( UI.Element.prototype );
+UI.Progress.prototype.constructor = UI.Label;
+
+UI.Progress.prototype.getValue = function () {
+
+	return this.bar.text;
+
+};
+
+UI.Progress.prototype.setValue = function ( value ) {
+
+	if ( value !== undefined ) {
+
+		this.bar.setText(value);
+
+	}
+
+	return this;
+
+};
+
 // Text
 
 UI.Text = function ( text ) {
@@ -262,11 +338,14 @@ UI.Label = function ( text ) {
 
 	UI.Element.call( this );
 
-	var dom = document.createElement( 'span' );
+	var dom = document.createElement( 'div' );
+	dom.align = "center";
+	dom.style.align = 'center';
 	dom.className = 'centredText';
 	dom.style.cursor = 'default';
 	dom.style.display = 'inline-block';
 	dom.style.verticalAlign = 'middle';
+	dom.style.horizontalAlign = 'center';
 
 	this.dom = dom;
 	this.setValue( text );

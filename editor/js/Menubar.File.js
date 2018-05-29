@@ -407,6 +407,11 @@ Menubar.File = function ( editor ) {
 		loader.load( 'js/libs/Tween.js', function ( content ) {
 			zip.file( 'js/Tween.js', content );
 		} );
+		
+		loader.load( 'js/libs/progressbar/progressbar.js', function ( content ) {
+			zip.file( 'js/progressbar.js', content );
+		} );
+		
 		loader.load( 'js/PublishPlayer.js', function ( content ) {
 			zip.file( 'js/PublishPlayer.js', content );
 		} );

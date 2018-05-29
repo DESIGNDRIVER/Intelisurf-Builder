@@ -14,14 +14,19 @@ var UIBuilder_Build_Button = function (content, container, editor) {
 	
 	console.log("UIBuilder.Button.js: FetchBanner: content=" + content + " hidden=" + !enabled);
 
-	uiplaybutton = new UI.Image( '', '30%', '30%' );
+	//uiplaybutton = new UI.Image( '', '30%', '30%' );
+	uiplaybutton = new UI.Progress(content, container.dom);
+	uiplaybutton.setWidth('15%');
+	uiplaybutton.setHeight('auto');
 	//uiplaybutton.dom.style.paddingTop ='100%';
 	uiplaybutton.setPosition( 'absolute' );
 	uiplaybutton.setRight( 0 );
-	uiplaybutton.setBottom( 0 );
-	uiplaybutton.dom.style.backgroundColor = progressColor;
+	uiplaybutton.setBottom( 0);
+	//uiplaybutton.dom.style.backgroundColor = progressColor;
 	
 	uiplaybutton.dom.hidden = !enabled;
+	
+	//uiplaybutton.dom.hidden = false;
 
 	console.log("UIBuilder.Button.js: FetchBanner End: hidden=" + !enabled);
 	console.log(uiplaybutton);
