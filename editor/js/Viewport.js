@@ -20,8 +20,16 @@ var Viewport = function ( editor ) {
 	console.log(container);
 	
 	console.log("Viewport.js: Viewport Viewport.UIBanner");
-	
 	container.add(UIBuilder_Build_Banner('Hello', container, editor));
+	
+	console.log("Viewport.js: Viewport Viewport.UILogo");
+	container.add(UIBuilder_Build_Logo('Hello', container, editor));
+	
+	console.log("Viewport.js: Viewport Viewport.UITitle");
+	container.add(UIBuilder_Build_Title('Hello', container, editor));
+	
+	console.log("Viewport.js: Viewport Viewport.UIButton");
+	container.add(UIBuilder_Build_Button('Hello', container, editor));
 
 	console.log("Viewport.js: Viewport Viewport.Helpers");
 	

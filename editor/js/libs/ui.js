@@ -256,6 +256,45 @@ UI.Text.prototype.setValue = function ( value ) {
 
 };
 
+// Label, a variant on text for use in the editor viewport custom ui preview
+
+UI.Label = function ( text ) {
+
+	UI.Element.call( this );
+
+	var dom = document.createElement( 'span' );
+	dom.className = 'centredText';
+	dom.style.cursor = 'default';
+	dom.style.display = 'inline-block';
+	dom.style.verticalAlign = 'middle';
+
+	this.dom = dom;
+	this.setValue( text );
+
+	return this;
+
+};
+
+UI.Label.prototype = Object.create( UI.Element.prototype );
+UI.Label.prototype.constructor = UI.Label;
+
+UI.Label.prototype.getValue = function () {
+
+	return this.dom.textContent;
+
+};
+
+UI.Label.prototype.setValue = function ( value ) {
+
+	if ( value !== undefined ) {
+
+		this.dom.textContent = value;
+
+	}
+
+	return this;
+
+};
 
 // Input
 

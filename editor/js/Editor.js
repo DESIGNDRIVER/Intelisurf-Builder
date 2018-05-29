@@ -647,6 +647,22 @@ Editor.prototype = {
         this.config.setKey( UIBuilder_Keys_Banner_Enabled, false);
 		this.config.setKey( UIBuilder_Keys_Banner_Image, '');
 		
+		this.config.setKey(UIBuilder_Keys_Banner_Enabled, false);
+		this.config.setKey(UIBuilder_Keys_Banner_Image, '');
+		this.config.setKey(UIBuilder_Keys_Banner_ImageName, '');
+		this.config.setKey(UIBuilder_Keys_Banner_Height, '50px');
+		this.config.setKey(UIBuilder_Keys_Banner_BGColor, 'white');
+		this.config.setKey(UIBuilder_Keys_Logo_Enabled, false);
+		this.config.setKey(UIBuilder_Keys_Logo_Image, '');
+		this.config.setKey(UIBuilder_Keys_Logo_ImageName, '');
+		this.config.setKey(UIBuilder_Keys_Title_Enabled, false);
+		this.config.setKey(UIBuilder_Keys_Title_Text, 'Intelisurf-Builder');
+		this.config.setKey(UIBuilder_Keys_Title_Size, '24px');
+		this.config.setKey(UIBuilder_Keys_Title_TextColor, 'grey');
+		
+		this.config.setKey(UIBuilder_Keys_Button_Enabled, false);
+		
+		
 		this.history.clear();
 		this.storage.clear();
 		this.animations.clear();

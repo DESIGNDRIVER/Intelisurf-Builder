@@ -157,9 +157,9 @@ Sidebar.Project = function ( editor ) {
 	console.log(uibanner);
 	var uibannerRow = new UI.Row();
 	{
-		var uibannerEnabled = new UI.Checkbox( uibanner.getEnabled()).onChange( uibannerUpdate );
-		var uibannerTexture = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( uibannerUpdate );
-		console.log("Sidebar.Project.js: setting uibannerdomhidden: " + !uibannerEnabled.getValue());
+		var uibannerEnabled = new UI.Checkbox( editor.config.getKey(UIBuilder_Keys_Banner_Enabled)).onChange( uibuilderUpdate );
+		var uibannerTexture = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( uibuilderUpdate );
+		console.log("Sidebar.Project.js: Banner setting uibannerdomhidden: " + !uibannerEnabled.getValue());
 		uibanner.dom.hidden = !uibannerEnabled.getValue();
 		uibannerRow.add( new UI.Text( 'UI Banner' ).setWidth( '90px' ) );
 		uibannerRow.add( uibannerEnabled );
@@ -168,26 +168,65 @@ Sidebar.Project = function ( editor ) {
 	container.add( uibannerRow );
 	var uibannerRow2 = new UI.Row();
 	{
-		var uibannerHeight = new UI.Input( editor.config.getKey(UIBuilder_Keys_Banner_Height)).setWidth( '50px' ).onChange( uibannerUpdate );
+		var uibannerHeight = new UI.Input( editor.config.getKey(UIBuilder_Keys_Banner_Height)).setWidth( '50px' ).onChange( uibuilderUpdate );
 		uibannerRow2.add( new UI.Text( 'Height' ).setWidth( '50px' ) );
 		uibannerRow2.add( uibannerHeight );
-		var uibannerColor = new UI.Color( editor.config.getKey(UIBuilder_Keys_Banner_BGColor)).onChange( uibannerUpdate );
+		var uibannerColor = new UI.Color( editor.config.getKey(UIBuilder_Keys_Banner_BGColor)).onChange( uibuilderUpdate );
 		uibannerRow2.add( new UI.Text( '' ).setWidth( '10px' ) ); // spacer
 		uibannerRow2.add( new UI.Text( 'BGColor' ).setWidth( '50px' ) );
 		uibannerRow2.add( new UI.Text( '' ).setWidth( '10px' ) ); // spacer
 		uibannerRow2.add( uibannerColor );
 	}
 	container.add( uibannerRow2 );
+
+	var uilogoRow = new UI.Row();
+	{
+		var uilogoEnabled = new UI.Checkbox( editor.config.getKey(UIBuilder_Keys_Logo_Enabled)).onChange( uibuilderUpdate );
+		var uilogoTexture = new UI.Texture( THREE.SphericalReflectionMapping ).onChange( uibuilderUpdate );
+		console.log("Sidebar.Project.js: Logo setting uibannerdomhidden: " + !uilogoEnabled.getValue());
+		uilogo.dom.hidden = !uilogoEnabled.getValue();
+		uilogoRow.add( new UI.Text( 'UI Logo' ).setWidth( '90px' ) );
+		uilogoRow.add( uilogoEnabled );
+		uilogoRow.add( uilogoTexture );
+	}
+	container.add( uilogoRow );
+	
+	var uititleInputRow = new UI.Row();
+	{
+		var uititleEnabled = new UI.Checkbox( editor.config.getKey(UIBuilder_Keys_Title_Enabled)).onClick(uibuilderUpdate).onChange( uibuilderUpdate );
+		var uititleText = new UI.Input(editor.config.getKey(UIBuilder_Keys_Title_Text)  ).onClick(uibuilderUpdate).onChange( uibuilderUpdate );
+		console.log("Sidebar.Project.js: Title setting uibannerdomhidden: " + !uititleEnabled.getValue());
+		uititle.dom.hidden = !uititleEnabled.getValue();
+		uititleInputRow.add( new UI.Text( 'UI Title' ).setWidth( '90px' ) );
+		uititleInputRow.add( uititleEnabled );
+		uititleInputRow.add( uititleText );
+	}
+	container.add( uititleInputRow );
+	
+	var uititleInputRow2 = new UI.Row();
+	{
+		var uititleSize = new UI.Input( editor.config.getKey(UIBuilder_Keys_Title_Size)).setWidth( '50px' ).onChange( uibuilderUpdate );
+		uititleInputRow2.add( new UI.Text( 'Size' ).setWidth( '50px' ) );
+		uititleInputRow2.add( uititleSize );
+		var uititleColor = new UI.Color( editor.config.getKey(UIBuilder_Keys_Title_TextColor)).onChange( uibuilderUpdate );
+		uititleInputRow2.add( new UI.Text( '' ).setWidth( '10px' ) ); // spacer
+		uititleInputRow2.add( new UI.Text( 'Color' ).setWidth( '50px' ) );
+		uititleInputRow2.add( new UI.Text( '' ).setWidth( '10px' ) ); // spacer
+		uititleInputRow2.add( uititleColor );
+	}
+	container.add( uititleInputRow2 );
 	
 	signals.editorCleared.add(updateFromConfig);
 	signals.editorStorageGet.add(updateFromConfig);
 	
-	function uibannerUpdate(){
+	function uibuilderUpdate(){
 		// Update UI Banner based on what is happening in the UI
 		
-        console.log("Sidebar.Project.js: uibannerUpdate Begin: uibanner.getEnabled=" + uibanner.getEnabled());
+        console.log("Sidebar.Project.js: uibuilderUpdate Begin: uibanner.getEnabled=" + uibanner.getEnabled());
+        console.log(uititle);
         //console.log(uibannerTexture);
-        console.log(uibanner);
+        //console.log(uibanner);
+        //console.log(uilogo);
         
         // Get Enabled, Texture & TextureName Values From UI Controls
         var uibanner_enabled = uibannerEnabled.getValue();
@@ -195,6 +234,13 @@ Sidebar.Project = function ( editor ) {
         var uibanner_texturename = uibannerTexture.texture.sourceFile;
         var uibanner_height = uibannerHeight.getValue();
         var uibanner_color = uibannerColor.getValue();
+        var uilogo_enabled = uilogoEnabled.getValue();
+        var uilogo_texture = uilogoTexture.texture.image.src;
+        var uilogo_texturename = uilogoTexture.texture.sourceFile;
+        var uititle_enabled = uititleEnabled.getValue();
+        var uititle_text = uititleText.getValue();
+        var uititle_size = uititleSize.getValue();
+        var uititle_color = uititleColor.getValue();
         
         // Save Enabled, Texture & Texture Name Values in Config
         config.setKey(UIBuilder_Keys_Banner_Enabled, uibanner_enabled);
@@ -202,21 +248,51 @@ Sidebar.Project = function ( editor ) {
         config.setKey(UIBuilder_Keys_Banner_ImageName, uibanner_texturename);
         config.setKey(UIBuilder_Keys_Banner_Height, uibanner_height);
         config.setKey(UIBuilder_Keys_Banner_BGColor, uibanner_color);
+        config.setKey(UIBuilder_Keys_Logo_Enabled, uilogo_enabled);
+        config.setKey(UIBuilder_Keys_Logo_Image, uilogo_texture);
+        config.setKey(UIBuilder_Keys_Logo_ImageName, uilogo_texturename);
+        config.setKey(UIBuilder_Keys_Title_Enabled, uititle_enabled);
+        config.setKey(UIBuilder_Keys_Title_Text, uititle_text);
+        config.setKey(UIBuilder_Keys_Title_Size, uititle_size);
+        config.setKey(UIBuilder_Keys_Title_TextColor, uititle_color);
         
         // Set Value of Image Preview In Viewport
         if (uibannerTexture.texture.image != undefined)
         {
         	uibannerTexture.texture.image.src.sourceFile = uibanner_texturename;
-        	console.log("Sidebar.Project.js: uibannerUpdate: imageSrc=" + uibanner_texture + " imageName=" + uibanner_texturename);
-        	uibanner.setValue(uibannerTexture.texture.image.src);
+        	console.log("Sidebar.Project.js: uibuilderUpdate: imageName=" + uibanner_texturename);
+        	console.log(uibanner);
+        	uibanner.setValue(UIBuilder_Fix_MissingImage(uibannerTexture.texture.image.src));
         	uibanner.setHeight(uibanner_height);
         	uibanner.dom.style.backgroundColor = uibanner_color;
 		}
+        
+        if (uilogoTexture.texture.image != undefined)
+        {
+        	uilogoTexture.texture.image.src.sourceFile = uilogo_texturename;
+        	console.log("Sidebar.Project.js: uibuilderUpdate: imageName=" + uilogo_texturename);
+        	console.log(uilogo);
+        	uilogo.setValue(UIBuilder_Fix_MissingImage(uilogoTexture.texture.image.src));
+        	//uilogo.setHeight(uibanner_height);
+        	//uilogo.setWidth(uibanner_height * 2);
+        	uilogo.dom.style.backgroundColor = '#00000000';
+		}
+        
+        // Set Value for Title Settings in Viewport
+        uititle.setValue(uititle_text);
+        uititle.setHeight(uibanner_height);
+        uititle.setFontSize(uititle_size);
+        console.log(uititle);
        
         // Set UI Control Hidden
         uibanner.dom.hidden = !uibanner_enabled;
+        uilogo.dom.hidden = !uilogo_enabled;
+        if (!uititle_enabled)
+        	uititle.dom.style.color = '#00000000';
+        else
+        	uititle.dom.style.color = uititle_color;
         
-        console.log("Sidebar.Project.js: uibannerUpdate End: uibanner.getEnabled=" + uibanner.getEnabled());
+        console.log("Sidebar.Project.js: uibuilderUpdate End: uibanner.getEnabled=" + uibanner.getEnabled() + " uilogo.enabled=" + uilogo_enabled);
         
 		signals.thereWasAChangeThatWeWouldLikeToSave.dispatch();
 		
@@ -229,6 +305,13 @@ Sidebar.Project = function ( editor ) {
 		console.log("Sidebar.Project.js: updateFromConfig: Begin: uibanner.getEnabled()="+uibanner.getEnabled());
 		
 		uibannerEnabled.setValue(editor.config.getKey(UIBuilder_Keys_Banner_Enabled));
+		uilogoEnabled.setValue(editor.config.getKey(UIBuilder_Keys_Logo_Enabled));
+		uititleEnabled.setValue(editor.config.getKey(UIBuilder_Keys_Title_Enabled));
+		
+        uititleSize.setValue(config.getKey(UIBuilder_Keys_Title_Size));
+        uititleColor.setValue(config.getKey(UIBuilder_Keys_Title_TextColor));
+        uibannerHeight.setValue(config.getKey(UIBuilder_Keys_Banner_Height));
+        uibannerColor.setValue(config.getKey(UIBuilder_Keys_Banner_BGColor));
 	
 		var image = document.createElement( 'img' );
 		image.src = editor.config.getKey(UIBuilder_Keys_Banner_Image);
@@ -236,13 +319,27 @@ Sidebar.Project = function ( editor ) {
 		texture.image = image;
 		uibannerTexture.setValue(texture);
 		uibannerTexture.setName(editor.config.getKey(UIBuilder_Keys_Banner_ImageName));
-		var uibt = uibannerTexture.texture.image.src;
-		
 		if (uibannerTexture.texture.image != undefined)
-        	uibanner.setValue(uibt);
+        	uibanner.setValue(uibannerTexture.texture.image.src);
 		
-		uibanner.dom.hidden = !uibanner.getEnabled();
+		var limage = document.createElement( 'img' );
+		limage.src = editor.config.getKey(UIBuilder_Keys_Logo_Image);
+		var texture = new Object();
+		texture.image = limage;
+		uilogoTexture.setValue(texture);
+		uilogoTexture.setName(editor.config.getKey(UIBuilder_Keys_Logo_ImageName));
+		if (uibannerTexture.texture.image != undefined)
+        	uibanner.setValue(uibannerTexture.texture.image.src);
 		
+		uibanner.dom.hidden = !editor.config.getKey(UIBuilder_Keys_Banner_Enabled);
+		uilogo.dom.hidden = !editor.config.getKey(UIBuilder_Keys_Logo_Enabled);
+		
+		if (!editor.config.getKey(UIBuilder_Keys_Title_Enabled))
+        	uititle.dom.style.color = '#00000000';
+        else
+        	uititle.dom.style.color = editor.config.getKey(UIBuilder_Keys_Title_TextColor);
+		
+		console.log(uilogo);
 		console.log("Sidebar.Project.js: updateFromConfig: End: uibannerHidden=" + uibanner.dom.hidden + " imageName=" + editor.config.getKey(UIBuilder_Keys_Banner_ImageName));
 	}
 

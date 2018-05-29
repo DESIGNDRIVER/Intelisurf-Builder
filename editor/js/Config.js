@@ -24,11 +24,11 @@ var Config = function ( name ) {
 
 		'project/ui/title/enabled':false,
 		'project/ui/title/font':'',
-		'project/ui/title/size':14,
+		'project/ui/title/size': '20px',
 		'project/ui/title/textcolor':'white',
-		'project/ui/title/text':'',
+		'project/ui/title/text':'Intelisurf Builder',
 
-		'project/ui/button/enabled':true,
+		'project/ui/button/enabled':false,
 		'project/ui/button/font':'',
 		'project/ui/button/textcolor':'black',
 		'project/ui/button/progresscolor':'orange',
