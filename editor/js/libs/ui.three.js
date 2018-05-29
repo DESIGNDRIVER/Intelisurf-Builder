@@ -179,6 +179,11 @@ UI.Texture = function ( mapping ) {
 UI.Texture.prototype = Object.create( UI.Element.prototype );
 UI.Texture.prototype.constructor = UI.Texture;
 
+UI.Texture.prototype.setName = function (the_name) {
+	var name = this.dom.children[ 1 ];
+	name.value = the_name;
+}
+
 UI.Texture.prototype.getValue = function () {
 
 	return this.texture;

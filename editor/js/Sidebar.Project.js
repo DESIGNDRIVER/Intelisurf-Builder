@@ -176,23 +176,21 @@ Sidebar.Project = function ( editor ) {
         console.log(uibannerTexture);
         console.log(uibanner);
         
-        // Get Enabled Value From UI Control
+        // Get Enabled, Texture & TextureName Values From UI Controls
         var uibanner_enabled = uibannerEnabled.getValue();
-        
-        // Get Texture Value From UI Control
         var uibanner_texture = uibannerTexture.texture.image.src;
+        var uibanner_texturename = uibannerTexture.texture.sourceFile;
         
-        // Save Enabled Value in Config
-        uibanner.setEnabled(uibanner_enabled);
-        
-        // Save Texture Value in Config
-        if (uibanner_texture != undefined)
-        	uibanner.setImage(uibanner_texture);
+        // Save Enabled, Texture & Texture Name Values in Config
+        config.setKey(UIBuilder_Keys_Banner_Enabled, uibanner_enabled);
+        config.setKey(UIBuilder_Keys_Banner_Image, uibanner_texture);
+        config.setKey(UIBuilder_Keys_Banner_ImageName, uibanner_texturename);
         
         // Set Value of Image Into Viewport
         if (uibannerTexture.texture.image != undefined)
         {
-        	console.log("Sidebar.Project.js: uibannerUpdate: imageSrc=" + uibannerTexture.texture.image.src);
+        	uibannerTexture.texture.image.src.sourceFile = uibanner_texturename;
+        	console.log("Sidebar.Project.js: uibannerUpdate: imageSrc=" + uibanner_texture + " imageName=" + uibanner_texturename);
         	uibanner.setValue(uibannerTexture.texture.image.src);
 		}
        
@@ -210,20 +208,23 @@ Sidebar.Project = function ( editor ) {
 	{
 		// Read Config and update the user interface and viewport based on what is in the config store
 		console.log("Sidebar.Project.js: updateFromConfig: Begin: uibanner.getEnabled()="+uibanner.getEnabled());
-		uibannerEnabled.setValue(uibanner.getEnabled());
+		
+		uibannerEnabled.setValue(editor.config.getKey(UIBuilder_Keys_Banner_Enabled));
 	
 		var image = document.createElement( 'img' );
-		image.src = uibanner.getImage();
+		image.src = editor.config.getKey(UIBuilder_Keys_Banner_Image);
 		var texture = new Object();
 		texture.image = image;
 		uibannerTexture.setValue(texture);
+		uibannerTexture.setName(editor.config.getKey(UIBuilder_Keys_Banner_ImageName));
+		var uibt = uibannerTexture.texture.image.src;
 		
 		if (uibannerTexture.texture.image != undefined)
-        	uibanner.setValue(uibannerTexture.texture.image.src);
+        	uibanner.setValue(uibt);
 		
 		uibanner.dom.hidden = !uibanner.getEnabled();
 		
-		console.log("Sidebar.Project.js: updateFromConfig: End: uibannerHidden=" + uibanner.dom.hidden);
+		console.log("Sidebar.Project.js: updateFromConfig: End: uibannerHidden=" + uibanner.dom.hidden + " imageName=" + editor.config.getKey(UIBuilder_Keys_Banner_ImageName));
 	}
 
 	function updateRenderer() {

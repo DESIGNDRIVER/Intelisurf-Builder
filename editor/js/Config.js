@@ -10,8 +10,28 @@ var Config = function ( name ) {
 
 		'project/title': '',
 		'project/editable': false,
+		
+		
 		'project/ui/banner/enabled': false,
+		'project/ui/banner/imagename':'',
 		'project/ui/banner/image': '',
+		'project/ui/banner/height':'50px',
+		'project/ui/banner/bgcolor':'grey',
+
+		'project/ui/logo/enabled':false,
+		'project/ui/logo/image':'',
+		'project/ui/logo/imagename':'',
+
+		'project/ui/title/enabled':false,
+		'project/ui/title/font':'',
+		'project/ui/title/size':14,
+		'project/ui/title/textcolor':'white',
+		'project/ui/title/text':'',
+
+		'project/ui/button/enabled':true,
+		'project/ui/button/font':'',
+		'project/ui/button/textcolor':'black',
+		'project/ui/button/progresscolor':'orange',
 
 		'project/renderer': 'WebGLRenderer',
 		'project/renderer/antialias': true,
