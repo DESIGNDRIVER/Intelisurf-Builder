@@ -54,7 +54,7 @@
                 <div id="endFullPanel" class="noselect">
                     <img src="images/endInstall.png" id="endInstall" >
                 </div>
-                <!-->div id="progressbar" ></div-->
+                <!--div id="progressbar" ></div-->
             </div>
         </div>
         
@@ -69,6 +69,8 @@
          	var uibanner = document.querySelector('#uibanner');
          	uibanner.src = data.project.ui.bannerimage;
          	uibanner.hidden = !data.project.ui.bannerenabled;
+
+
          	
          // ProgressBar currently disabled
 /*             var bar = new ProgressBar.Circle('#progressbar', {
@@ -104,6 +106,10 @@
 			var controlPanel = document.querySelector('#pauseOrPlay');
             var scene, camera, controls, stats;
 			var renderer, mixer;
+
+            console.log("Hide Control Panel: " + (!data.project.ui.buttonenabled));
+
+			controlPanel.hidden = !data.project.ui.buttonenabled;
 			
 			var delta = 0;
 			var pauseAt = 0;

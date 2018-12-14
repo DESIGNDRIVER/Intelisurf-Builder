@@ -2,882 +2,864 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var Editor = function () {
+var Editor = function() {
 
     console.log("Editor.js: Editor");
 
-	this.DEFAULT_CAMERA = new THREE.PerspectiveCamera( 50, 1, 0.1, 10000 );
-	this.DEFAULT_CAMERA.name = 'Camera';
-	this.DEFAULT_CAMERA.position.set( 20, 10, 20 );
-	this.DEFAULT_CAMERA.lookAt( new THREE.Vector3() );
-   
-	this.animationCamera = new THREE.PerspectiveCamera( 50, 1, 0.1, 1000 );
-	this.animationCamera.name = 'animationCamera';
-	this.animationCamera.position.set( 0, 10, 10 );
-	this.animationCamera.lookAt( new THREE.Vector3() );
-	// this.animationCamera.uuid =  THREE.Math.generateUUID();
-	// this.animationCamera.display = false;
-	var Signal = signals.Signal;
-	this.sceneBackup = null;
+    this.DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.1, 10000);
+    this.DEFAULT_CAMERA.name = 'Camera';
+    this.DEFAULT_CAMERA.position.set(20, 10, 20);
+    this.DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-	this.signals = {
-		// script
-		editScript: new Signal(),
+    this.animationCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+    this.animationCamera.name = 'animationCamera';
+    this.animationCamera.position.set(0, 10, 10);
+    this.animationCamera.lookAt(new THREE.Vector3());
+    // this.animationCamera.uuid =  THREE.Math.generateUUID();
+    // this.animationCamera.display = false;
+    var Signal = signals.Signal;
+    this.sceneBackup = null;
 
-		// player
-		startPlayer: new Signal(),
-		stopPlayer: new Signal(),
+    this.signals = {
+        // script
+        editScript: new Signal(),
 
-		// actions
-		showModal: new Signal(),
+        // player
+        startPlayer: new Signal(),
+        stopPlayer: new Signal(),
 
-		// notifications
-		editorStorageGet: new Signal(),		
-		editorCleared: new Signal(),
+        // actions
+        showModal: new Signal(),
 
-		savingStarted: new Signal(),
-		savingFinished: new Signal(),
+        // notifications
+        editorStorageGet: new Signal(),
+        editorCleared: new Signal(),
 
-		themeChanged: new Signal(),
-		
-		thereWasAChangeThatWeWouldLikeToSave: new Signal(),
+        savingStarted: new Signal(),
+        savingFinished: new Signal(),
 
-		recordingModeChanged: new Signal(),
-		transformModeChanged: new Signal(),
-		snapChanged: new Signal(),
-		spaceChanged: new Signal(),
-		rendererChanged: new Signal(),
+        themeChanged: new Signal(),
 
-		sceneBackgroundChanged: new Signal(),
-		sceneFogChanged: new Signal(),
-		sceneGraphChanged: new Signal(),
+        thereWasAChangeThatWeWouldLikeToSave: new Signal(),
 
-		cameraChanged: new Signal(),
+        recordingModeChanged: new Signal(),
+        transformModeChanged: new Signal(),
+        snapChanged: new Signal(),
+        spaceChanged: new Signal(),
+        rendererChanged: new Signal(),
 
-		geometryChanged: new Signal(),
-		animationChanged: new Signal(),
-		objectSelected: new Signal(),
-		objectFocused: new Signal(),
+        sceneBackgroundChanged: new Signal(),
+        sceneFogChanged: new Signal(),
+        sceneGraphChanged: new Signal(),
 
-		objectAdded: new Signal(),
-		objectChanged: new Signal(),
-		objectRemoved: new Signal(),
-		objectHiddened: new Signal(),
-		objectDisplayed: new Signal(),
+        cameraChanged: new Signal(),
+
+        geometryChanged: new Signal(),
+        animationChanged: new Signal(),
+        objectSelected: new Signal(),
+        objectFocused: new Signal(),
+
+        objectAdded: new Signal(),
+        objectChanged: new Signal(),
+        objectRemoved: new Signal(),
+        objectHiddened: new Signal(),
+        objectDisplayed: new Signal(),
 
 
-		helperAdded: new Signal(),
-		helperRemoved: new Signal(),
+        helperAdded: new Signal(),
+        helperRemoved: new Signal(),
 
-		materialChanged: new Signal(),
+        materialChanged: new Signal(),
 
-		scriptAdded: new Signal(),
-		scriptChanged: new Signal(),
-		scriptRemoved: new Signal(),
+        scriptAdded: new Signal(),
+        scriptChanged: new Signal(),
+        scriptRemoved: new Signal(),
 
-		windowResize: new Signal(),
+        windowResize: new Signal(),
 
-		showGridChanged: new Signal(),
-		refreshSidebarObject3D: new Signal(),
-		historyChanged: new Signal(),
-		startAnimation: new Signal(),
-		startAllAnimations : new Signal(),
-		newAnimation: new Signal(),
-		editAnimation: new Signal(),
-		animationMode: new Signal(),
-		stopAnimation: new Signal(),
-		stopAnimations: new Signal(),
-		pauseAnimations: new Signal(),
-		enterAnimationCamera: new Signal(),
-		defaultLightSetting: new Signal(),      
-	};
+        showGridChanged: new Signal(),
+        refreshSidebarObject3D: new Signal(),
+        historyChanged: new Signal(),
+        startAnimation: new Signal(),
+        startAllAnimations: new Signal(),
+        newAnimation: new Signal(),
+        editAnimation: new Signal(),
+        animationMode: new Signal(),
+        stopAnimation: new Signal(),
+        stopAnimations: new Signal(),
+        pauseAnimations: new Signal(),
+        enterAnimationCamera: new Signal(),
+        defaultLightSetting: new Signal(),
+    };
 
-	this.config = new Config( 'threejs-editor' );
-	this.history = new History( this );
-	this.storage = new Storage();
-	this.loader = new Loader( this );
-	this.animations = new Animations();
-	//this.camera = this.DEFAULT_CAMERA.clone();
-	this.camera = new THREE.PerspectiveCamera( 50, 1, 0.1, 10000 );
-	this.camera.name = 'Camera';
-	this.camera.position.set( 20, 10, 20 );
-	this.camera.lookAt( new THREE.Vector3() );
-	
-	this.scene = new THREE.Scene();
-	this.scene.name = 'Scene';
-	this.scene.background = new THREE.Color( 0xeeeeee );
+    this.config = new Config('threejs-editor');
+    this.history = new History(this);
+    this.storage = new Storage();
+    this.loader = new Loader(this);
+    this.animations = new Animations();
+    //this.camera = this.DEFAULT_CAMERA.clone();
+    this.camera = new THREE.PerspectiveCamera(50, 1, 0.1, 10000);
+    this.camera.name = 'Camera';
+    this.camera.position.set(20, 10, 20);
+    this.camera.lookAt(new THREE.Vector3());
 
-	this.sceneHelpers = new THREE.Scene();
+    this.scene = new THREE.Scene();
+    this.scene.name = 'Scene';
+    this.scene.background = new THREE.Color(0xeeeeee);
 
-	this.object = {};
-	this.geometries = {};
-	this.materials = {};
-	this.textures = {};
-	this.scripts = {};
+    this.sceneHelpers = new THREE.Scene();
 
-	this.selected = null;
-	this.helpers = {};
-	this.animationPlayer = new AnimationPlayer( this );
+    this.object = {};
+    this.geometries = {};
+    this.materials = {};
+    this.textures = {};
+    this.scripts = {};
+
+    this.selected = null;
+    this.helpers = {};
+    this.animationPlayer = new AnimationPlayer(this);
 };
 
 Editor.prototype = {
 
-	setTheme: function ( value ) {   
+    setTheme: function(value) {
         console.log("Editor.js: setTheme");
         console.log(value);
 
-		document.getElementById( 'theme' ).href = value;
+        document.getElementById('theme').href = value;
 
-		this.signals.themeChanged.dispatch( value );      
-	},
+        this.signals.themeChanged.dispatch(value);
+    },
 
-	setScene: function ( scene, background) {
+    setScene: function(scene, background) {
 
-		this.scene.uuid = scene.uuid;
-		this.scene.name = scene.name;
+        this.scene.uuid = scene.uuid;
+        this.scene.name = scene.name;
 
         console.log("Editor.js: setScene");
-		console.log(scene);
+        console.log(scene);
 
-		if ( background != null ) 
-        {
+        if (background != null) {
             console.log("Editor.js: setScene loadbackground");
-			//this.scene.background = THREE.ImageUtils.loadTexture( background );
-			//this.signals.sceneGraphChanged.dispatch();
-			
-			// instantiate a loader
-			var loader = new THREE.TextureLoader();
+            //this.scene.background = THREE.ImageUtils.loadTexture( background );
+            //this.signals.sceneGraphChanged.dispatch();
 
-			// load a resource
-			loader.load(
-				background,
-					
-				// onLoad callback
-				function ( texture ) {
-					console.log("Editor.js: setScene loadbackground loader.load");
-					console.log(texture);
-					// in this example we create the material when the texture is loaded
-					this.scene.background = texture;
-					this.signals.sceneGraphChanged.dispatch();
-				},
+            // instantiate a loader
+            var loader = new THREE.TextureLoader();
 
-				// onProgress callback currently not supported
-				undefined,
+            // load a resource
+            loader.load(
+                background,
 
-				// onError callback
-				function ( err ) {
-					console.error( 'An error happened.' );
-				}
-			);
-		}
-		else
-        {
+                // onLoad callback
+                function(texture) {
+                    console.log("Editor.js: setScene loadbackground loader.load");
+                    console.log(texture);
+                    // in this example we create the material when the texture is loaded
+                    this.scene.background = texture;
+                    this.signals.sceneGraphChanged.dispatch();
+                },
+
+                // onProgress callback currently not supported
+                undefined,
+
+                // onError callback
+                function(err) {
+                    console.error('An error happened.');
+                }
+            );
+        } else {
             console.log("Editor.js: setScene setDefaultBackground");
             this.setDefaultBackground();
         }
 
-		if ( scene.fog !== null ) this.scene.fog = scene.fog.clone();
+        if (scene.fog !== null) this.scene.fog = scene.fog.clone();
 
-		this.scene.userData = JSON.parse( JSON.stringify( scene.userData ) );
+        this.scene.userData = JSON.parse(JSON.stringify(scene.userData));
 
-		// avoid render per object
+        // avoid render per object
 
-		this.signals.sceneGraphChanged.active = false;
+        this.signals.sceneGraphChanged.active = false;
 
-		while ( scene.children.length > 0 ) {
+        while (scene.children.length > 0) {
 
-			this.addObject( scene.children[ 0 ] );
+            this.addObject(scene.children[0]);
 
-		}
+        }
 
-		this.signals.sceneGraphChanged.active = true;
-		this.signals.sceneGraphChanged.dispatch();
-	},
+        this.signals.sceneGraphChanged.active = true;
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-	copyScene : function() {
+    copyScene: function() {
         console.log("Editor.js: copyScene");
-		this.sceneBackup = editor.scene.clone();
-	},
+        this.sceneBackup = editor.scene.clone();
+    },
 
-	setDefaultBackground : function(){
+    setDefaultBackground: function() {
         console.log("Editor.js: setDefaultBackground");
-		var scope = this;
-		var loader = new THREE.TextureLoader();
-		loader.load( "images/background/default.jpg",function( texture ){
-			
-			console.log("Editor.js: setDefaultBackground loaded: " + texture);
-			
-			var geometry = new THREE.SphereBufferGeometry( 800, 8, 6, 0, Math.PI * 2, 0, Math.PI );
-			var material = new THREE.MeshBasicMaterial();
-			material.side = THREE.DoubleSide;
-			material.map = texture;
-			
-			var mesh = new THREE.Mesh( geometry, material);
-			mesh.name = 'Intelisurf-Background';
+        var scope = this;
+        var loader = new THREE.TextureLoader();
+        loader.load("images/background/default.jpg", function(texture) {
 
-			this.editor.signals.sceneGraphChanged.active = false;
+            console.log("Editor.js: setDefaultBackground loaded: " + texture);
 
-			this.editor.addObject( mesh );
+            var geometry = new THREE.SphereBufferGeometry(800, 8, 6, 0, Math.PI * 2, 0, Math.PI);
+            var material = new THREE.MeshBasicMaterial();
+            material.side = THREE.DoubleSide;
+            material.map = texture;
 
-			this.editor.signals.sceneGraphChanged.active = true;
-			this.editor.signals.sceneGraphChanged.dispatch();
-			
-			//scope.scene.background = texture;
-			//scope.signals.sceneGraphChanged.dispatch();
-		});
-	},
-	
-	setInitialSphereContent : function( envMap ) {
-		
-	},
-	
-	addObject: function ( object ) {   
-		var scope = this;
-		object.traverse( function ( child ) {
+            var mesh = new THREE.Mesh(geometry, material);
+            mesh.name = 'Intelisurf-Background';
 
-			if ( child.geometry !== undefined ) scope.addGeometry( child.geometry );
-			if ( child.material !== undefined ) scope.addMaterial( child.material );
+            this.editor.signals.sceneGraphChanged.active = false;
 
-			scope.addHelper( child );
+            this.editor.addObject(mesh);
 
-		} );
+            this.editor.signals.sceneGraphChanged.active = true;
+            this.editor.signals.sceneGraphChanged.dispatch();
 
-		this.scene.add( object );
-		this.signals.objectAdded.dispatch( object );
-		this.signals.sceneGraphChanged.dispatch();      
-	},
-	
-	addObjectAndUpdateLater: function ( object ) {   
-		var scope = this;
-		object.traverse( function ( child ) {
+            //scope.scene.background = texture;
+            //scope.signals.sceneGraphChanged.dispatch();
+        });
+    },
 
-			if ( child.geometry !== undefined ) scope.addGeometry( child.geometry );
-			if ( child.material !== undefined ) scope.addMaterial( child.material );
+    setInitialSphereContent: function(envMap) {
 
-			scope.addHelper( child );
+    },
 
-		} );
+    addObject: function(object) {
+        var scope = this;
+        object.traverse(function(child) {
 
-		this.scene.add( object );
-	},
+            if (child.geometry !== undefined) scope.addGeometry(child.geometry);
+            if (child.material !== undefined) scope.addMaterial(child.material);
 
-	addAnimation: function( key, animation )
-    { 
-		this.animations.add( key, animation );
-		this.signals.animationChanged.dispatch();      
-	},
+            scope.addHelper(child);
 
-	removeAnimation: function( key ) 
-    {
-		// for( var prop in this.animations.animations ) {
-		// 	console.log(prop);
-		// 	if( this.animations.hasOwnProperty( prop ) ) {
-		// 			if( this.animations[ prop ] === animation )
-		// 				return prop;
-		// 	}
-		// }
+        });
 
-		delete this.animations.animations[key];
+        this.scene.add(object);
+        this.signals.objectAdded.dispatch(object);
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-		this.signals.animationChanged.dispatch();      
-	},
+    addObjectAndUpdateLater: function(object) {
+        var scope = this;
+        object.traverse(function(child) {
 
-	hideObject: function(object)
-    {
-		object.traverse ( function (child) {
-			if (child instanceof THREE.Mesh) {
-				child.visible = false;
-			}
-		});
+            if (child.geometry !== undefined) scope.addGeometry(child.geometry);
+            if (child.material !== undefined) scope.addMaterial(child.material);
 
-		this.signals.sceneGraphChanged.dispatch();      
-	},
+            scope.addHelper(child);
 
-	displayObject: function(object)
-    {
-		object.traverse ( function (child) {
-			if (child instanceof THREE.Mesh) {
-				child.visible = true;
-			}
-		});
+        });
 
-		this.signals.sceneGraphChanged.dispatch();      
-	},
+        this.scene.add(object);
+    },
 
-	moveObject: function ( object, parent, before ) 
-    {
-		if ( parent === undefined ) {
+    addAnimation: function(key, animation) {
+        this.animations.add(key, animation);
+        this.signals.animationChanged.dispatch();
+    },
 
-			parent = this.scene;
+    removeAnimation: function(key) {
+        // for( var prop in this.animations.animations ) {
+        // 	console.log(prop);
+        // 	if( this.animations.hasOwnProperty( prop ) ) {
+        // 			if( this.animations[ prop ] === animation )
+        // 				return prop;
+        // 	}
+        // }
 
-		}
+        delete this.animations.animations[key];
 
-		parent.add( object );
+        this.signals.animationChanged.dispatch();
+    },
 
-		// sort children array
+    hideObject: function(object) {
+        object.traverse(function(child) {
+            if (child instanceof THREE.Mesh) {
+                child.visible = false;
+            }
+        });
 
-		if ( before !== undefined ) {
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-			var index = parent.children.indexOf( before );
-			parent.children.splice( index, 0, object );
-			parent.children.pop();
+    displayObject: function(object) {
+        object.traverse(function(child) {
+            if (child instanceof THREE.Mesh) {
+                child.visible = true;
+            }
+        });
 
-		}
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-		this.signals.sceneGraphChanged.dispatch();      
-	},
+    moveObject: function(object, parent, before) {
+        if (parent === undefined) {
 
-	nameObject: function ( object, name ) 
-    {
-		object.name = name;
-		this.signals.sceneGraphChanged.dispatch();
-	},
+            parent = this.scene;
 
-	removeObject: function ( object ) 
-    {
+        }
+
+        parent.add(object);
+
+        // sort children array
+
+        if (before !== undefined) {
+
+            var index = parent.children.indexOf(before);
+            parent.children.splice(index, 0, object);
+            parent.children.pop();
+
+        }
+
+        this.signals.sceneGraphChanged.dispatch();
+    },
+
+    nameObject: function(object, name) {
+        object.name = name;
+        this.signals.sceneGraphChanged.dispatch();
+    },
+
+    removeObject: function(object) {
         console.log("Editor.js removeObject");
 
-		if ( object.parent === null ) return; // avoid deleting the camera or scene
+        if (object.parent === null) return; // avoid deleting the camera or scene
 
-		var scope = this;
+        var scope = this;
 
-		object.traverse( function ( child ) {
+        object.traverse(function(child) {
 
-			scope.removeHelper( child );
+            scope.removeHelper(child);
 
-		} );
+        });
 
-		object.parent.remove( object );
+        object.parent.remove(object);
 
-		this.signals.objectRemoved.dispatch( object );
-		this.signals.sceneGraphChanged.dispatch();      
-	},
+        this.signals.objectRemoved.dispatch(object);
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-	defaultLightSetting : function () {
-		var lightCount = 0;
-		var cameraCount = 0;
+    defaultLightSetting: function() {
+        var lightCount = 0;
+        var cameraCount = 0;
 
         console.log("Editor.js defaultLightSetting");
 
-		this.scene.traverse( function ( child ) {
-			if( child.isLight ){
-				lightCount += 1;
-			};
-			if( child.isCamera ){
-				cameraCount += 1;
-				console.log('camera',child);
-			}
-		} );
-		
-		console.log("Editor.js defaultLightSetting count: " + lightCount );
-
-		if( lightCount == 0 ) {
-			
-			this.signals.sceneGraphChanged.active = false;
-
-			console.log("Editor.js defaultLightSetting adding lights" );
-			
-			var color = 0xffffff;
-			var intensity = 0.6;
-			var light = new THREE.DirectionalLight( color, intensity );
-			light.name = 'DirectionalLight ' + ( ++ lightCount );
-			light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
-			light.position.set( 0, 5000, 5000 );
-			light.castShadow = true;
-			light.shadowCameraVisible = true;
-			//this.execute( new AddObjectCommand( light ) );
-			
-			this.addObject( light );
-
-			var light = new THREE.DirectionalLight( color, 0 );
-			light.name = 'DirectionalLight ' + ( ++ lightCount );
-			light.target.name = 'DirectionalLight ' + ( lightCount ) + ' Target';
-			light.position.set( 0, 5000, -5000 );
-			//this.execute( new AddObjectCommand( light ) );
-
-			this.addObject( light );
-
-			var light = new THREE.AmbientLight( color, 0 );
-			light.name = 'AmbientLight ' + ( ++ lightCount );
-			light.position.set( 0, 5000, 0 );
-			//light.intensity = 0;
-			this.addObject( light );
-
-			//this.execute( new AddObjectCommand( light ) ); 
-			
-			console.log("Editor.js defaultLightSetting lights added");
-			
-			this.signals.sceneGraphChanged.active = true;
-			this.signals.sceneGraphChanged.dispatch();
-		}
-
-		console.log("Editor.js defaultLightSetting executingCommand");
-		
-		if( cameraCount == 0 ) {
-			this.execute( new AddObjectCommand(this.animationCamera) );
-		}
-		
-		console.log("Editor.js defaultLightSetting complete");
-	},
-
-	addGeometry: function ( geometry ) 
-    {
-		this.geometries[ geometry.uuid ] = geometry;      
-	},
-
-	setGeometryName: function ( geometry, name ) 
-    {   
-		geometry.name = name;
-		this.signals.sceneGraphChanged.dispatch();      
-	},
-
-	addMaterial: function ( material ) 
-    {   
-		this.materials[ material.uuid ] = material;      
-	},
+        this.scene.traverse(function(child) {
+            if (child.isLight) {
+                lightCount += 1;
+            };
+            if (child.isCamera) {
+                cameraCount += 1;
+                console.log('camera', child);
+            }
+        });
+
+        console.log("Editor.js defaultLightSetting count: " + lightCount);
 
-	setMaterialName: function ( material, name ) 
-    {
-		material.name = name;
-		this.signals.sceneGraphChanged.dispatch();      
-	},
+        if (lightCount == 0) {
+
+            this.signals.sceneGraphChanged.active = false;
 
-	addTexture: function ( texture ) {
+            console.log("Editor.js defaultLightSetting adding lights");
+
+            var color = 0xffffff;
+            var intensity = 0.6;
+            var light = new THREE.DirectionalLight(color, intensity);
+            light.name = 'DirectionalLight ' + (++lightCount);
+            light.target.name = 'DirectionalLight ' + (lightCount) + ' Target';
+            light.position.set(0, 5000, 5000);
+            light.castShadow = true;
+            light.shadowCameraVisible = true;
+            //this.execute( new AddObjectCommand( light ) );
 
-		this.textures[ texture.uuid ] = texture;
+            this.addObject(light);
 
-	},
-   
-	addHelper: function () {
+            var light = new THREE.DirectionalLight(color, 0);
+            light.name = 'DirectionalLight ' + (++lightCount);
+            light.target.name = 'DirectionalLight ' + (lightCount) + ' Target';
+            light.position.set(0, 5000, -5000);
+            //this.execute( new AddObjectCommand( light ) );
 
-		var geometry = new THREE.SphereBufferGeometry( 2, 4, 2 );
-		var material = new THREE.MeshBasicMaterial( { color: 0xff0000, visible: false } );
+            this.addObject(light);
 
-		return function ( object ) {
+            var light = new THREE.AmbientLight(color, 0);
+            light.name = 'AmbientLight ' + (++lightCount);
+            light.position.set(0, 5000, 0);
+            //light.intensity = 0;
+            this.addObject(light);
 
-			var helper;
+            //this.execute( new AddObjectCommand( light ) ); 
 
-			if ( object instanceof THREE.Camera ) {         
-				helper = new THREE.CameraHelper( object, 1 );            
-			} else if ( object instanceof THREE.PointLight ) {         
-				helper = new THREE.PointLightHelper( object, 1 );            
-			} else if ( object instanceof THREE.DirectionalLight ) {         
-				helper = new THREE.DirectionalLightHelper( object, 1 );            
-			} else if ( object instanceof THREE.SpotLight ) {         
-				helper = new THREE.SpotLightHelper( object, 1 );            
-			} else if ( object instanceof THREE.HemisphereLight ) {         
-				helper = new THREE.HemisphereLightHelper( object, 1 );            
-			} else if ( object instanceof THREE.SkinnedMesh ) {         
-				helper = new THREE.SkeletonHelper( object );            
-			} else {
-				return;            
-			}
+            console.log("Editor.js defaultLightSetting lights added");
 
-			var picker = new THREE.Mesh( geometry, material );
-			picker.name = 'picker';
-			picker.userData.object = object;
-			helper.add( picker );
+            this.signals.sceneGraphChanged.active = true;
+            this.signals.sceneGraphChanged.dispatch();
+        }
 
-			this.sceneHelpers.add( helper );
-			this.helpers[ object.id ] = helper;
+        console.log("Editor.js defaultLightSetting executingCommand");
 
-			this.signals.helperAdded.dispatch( helper );
+        if (cameraCount == 0) {
+            this.execute(new AddObjectCommand(this.animationCamera));
+        }
 
-		};
+        console.log("Editor.js defaultLightSetting complete");
+    },
 
-	}(),
+    addGeometry: function(geometry) {
+        this.geometries[geometry.uuid] = geometry;
+    },
 
-	removeHelper: function ( object ) {
+    setGeometryName: function(geometry, name) {
+        geometry.name = name;
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-		if ( this.helpers[ object.id ] !== undefined ) {
-			console.log("helpRemoved");
-			var helper = this.helpers[ object.id ];
-			helper.parent.remove( helper );
+    addMaterial: function(material) {
+        this.materials[material.uuid] = material;
+    },
 
-			delete this.helpers[ object.id ];
+    setMaterialName: function(material, name) {
+        material.name = name;
+        this.signals.sceneGraphChanged.dispatch();
+    },
 
-			this.signals.helperRemoved.dispatch( helper );
+    addTexture: function(texture) {
 
-		}      
-	},
+        this.textures[texture.uuid] = texture;
 
-	addScript: function ( object, script ) {
-		if ( this.scripts[ object.uuid ] === undefined ) {
+    },
 
-			this.scripts[ object.uuid ] = [];
-	
+    addHelper: function() {
 
-		}
+        var geometry = new THREE.SphereBufferGeometry(2, 4, 2);
+        var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
 
-		this.scripts[ object.uuid ].push( script );
+        return function(object) {
 
-		this.signals.scriptAdded.dispatch( script );      
-	},
+            var helper;
 
-	removeScript: function ( object, script ) {
+            if (object instanceof THREE.Camera) {
+                helper = new THREE.CameraHelper(object, 1);
+            } else if (object instanceof THREE.PointLight) {
+                helper = new THREE.PointLightHelper(object, 1);
+            } else if (object instanceof THREE.DirectionalLight) {
+                helper = new THREE.DirectionalLightHelper(object, 1);
+            } else if (object instanceof THREE.SpotLight) {
+                helper = new THREE.SpotLightHelper(object, 1);
+            } else if (object instanceof THREE.HemisphereLight) {
+                helper = new THREE.HemisphereLightHelper(object, 1);
+            } else if (object instanceof THREE.SkinnedMesh) {
+                helper = new THREE.SkeletonHelper(object);
+            } else {
+                return;
+            }
 
-		if ( this.scripts[ object.uuid ] === undefined ) return;
+            var picker = new THREE.Mesh(geometry, material);
+            picker.name = 'picker';
+            picker.userData.object = object;
+            helper.add(picker);
 
-		var index = this.scripts[ object.uuid ].indexOf( script );
+            this.sceneHelpers.add(helper);
+            this.helpers[object.id] = helper;
 
-		if ( index !== - 1 ) {
+            this.signals.helperAdded.dispatch(helper);
 
-			this.scripts[ object.uuid ].splice( index, 1 );
+        };
 
-		}
+    }(),
 
-		this.signals.scriptRemoved.dispatch( script );      
-	},
+    removeHelper: function(object) {
 
-	getObjectMaterial: function ( object, slot ) {
+        if (this.helpers[object.id] !== undefined) {
+            console.log("helpRemoved");
+            var helper = this.helpers[object.id];
+            helper.parent.remove(helper);
 
-		var material = object.material;
+            delete this.helpers[object.id];
 
-		if ( Array.isArray( material ) ) {
+            this.signals.helperRemoved.dispatch(helper);
 
-			material = material[ slot ];
-			console.log("Material is an array");
+        }
+    },
 
-		}
+    addScript: function(object, script) {
+        if (this.scripts[object.uuid] === undefined) {
 
-		return material;
+            this.scripts[object.uuid] = [];
 
-	},
 
-	setObjectMaterial: function ( object, slot, newMaterial ) {
+        }
 
-		if ( Array.isArray( object.material ) ) {
+        this.scripts[object.uuid].push(script);
 
-			object.material[ slot ] = newMaterial;
+        this.signals.scriptAdded.dispatch(script);
+    },
 
-		} else {
+    removeScript: function(object, script) {
 
-			object.material = newMaterial;
+        if (this.scripts[object.uuid] === undefined) return;
 
-		}
+        var index = this.scripts[object.uuid].indexOf(script);
 
-	},
-   
-	select: function ( object ) {
+        if (index !== -1) {
 
-		if ( this.selected === object ) return;
+            this.scripts[object.uuid].splice(index, 1);
 
-		var uuid = null;
+        }
 
-		if ( object !== null ) {
+        this.signals.scriptRemoved.dispatch(script);
+    },
 
-			uuid = object.uuid;
+    getObjectMaterial: function(object, slot) {
 
-		}
+        var material = object.material;
 
-		this.selected = object;
+        if (Array.isArray(material)) {
 
-		this.config.setKey( 'selected', uuid );
-		this.signals.objectSelected.dispatch( object );
+            material = material[slot];
+            console.log("Material is an array");
 
-	},
+        }
 
-	selectById: function ( id ) {
+        return material;
 
-		if ( id === this.camera.id ) {
+    },
 
-			this.select( this.camera );
-			return;
+    setObjectMaterial: function(object, slot, newMaterial) {
 
-		}
+        if (Array.isArray(object.material)) {
 
-		this.select( this.scene.getObjectById( id, true ) );
+            object.material[slot] = newMaterial;
 
-	},
+        } else {
 
-	selectByUuid: function ( uuid ) {
+            object.material = newMaterial;
 
-		var scope = this;
+        }
 
-		this.scene.traverse( function ( child ) {
-			//console.log(uuid);
-			if ( child.uuid === uuid ) {
+    },
 
-				scope.select( child );
+    select: function(object) {
 
-			}
+        if (this.selected === object) return;
 
-		} );
+        var uuid = null;
 
-	},
+        if (object !== null) {
 
-	getObjectByUuid: function ( uuid ) {
+            uuid = object.uuid;
 
-		var scope = this;
-		var curr = null;
-		this.scene.traverse( function ( child ) {
-			//console.log(uuid);
-			if ( child.uuid === uuid ) {
+        }
 
-				curr =  child;
+        this.selected = object;
 
-			}
+        this.config.setKey('selected', uuid);
+        this.signals.objectSelected.dispatch(object);
 
-		} );
-		return curr;
+    },
 
-	},
-	
-	deselect: function () {
+    selectById: function(id) {
 
-		this.select( null );
+        if (id === this.camera.id) {
 
-	},
+            this.select(this.camera);
+            return;
 
-	focus: function ( object ) {
+        }
 
-		this.signals.objectFocused.dispatch( object );
+        this.select(this.scene.getObjectById(id, true));
 
-	},
+    },
 
-	focusById: function ( id ) {
+    selectByUuid: function(uuid) {
 
-		this.focus( this.scene.getObjectById( id, true ) );
+        var scope = this;
 
-	},
+        this.scene.traverse(function(child) {
+            //console.log(uuid);
+            if (child.uuid === uuid) {
 
-	clear: function () {
+                scope.select(child);
+
+            }
+
+        });
+
+    },
+
+    getObjectByUuid: function(uuid) {
+
+        var scope = this;
+        var curr = null;
+        this.scene.traverse(function(child) {
+            //console.log(uuid);
+            if (child.uuid === uuid) {
+
+                curr = child;
+
+            }
+
+        });
+        return curr;
+
+    },
+
+    deselect: function() {
+
+        this.select(null);
+
+    },
+
+    focus: function(object) {
+
+        this.signals.objectFocused.dispatch(object);
+
+    },
+
+    focusById: function(id) {
+
+        this.focus(this.scene.getObjectById(id, true));
+
+    },
+
+    clear: function() {
         console.log("Editor.js clear begin");
 
-        this.config.setKey( UIBuilder_Keys_Banner_Enabled, false);
-		this.config.setKey( UIBuilder_Keys_Banner_Image, '');
-		
-		this.config.setKey(UIBuilder_Keys_Banner_Enabled, false);
-		this.config.setKey(UIBuilder_Keys_Banner_Image, '');
-		this.config.setKey(UIBuilder_Keys_Banner_ImageName, '');
-		this.config.setKey(UIBuilder_Keys_Banner_Height, '50px');
-		this.config.setKey(UIBuilder_Keys_Banner_BGColor, 'white');
-		this.config.setKey(UIBuilder_Keys_Logo_Enabled, false);
-		this.config.setKey(UIBuilder_Keys_Logo_Image, '');
-		this.config.setKey(UIBuilder_Keys_Logo_ImageName, '');
-		this.config.setKey(UIBuilder_Keys_Title_Enabled, false);
-		this.config.setKey(UIBuilder_Keys_Title_Text, 'Intelisurf-Builder');
-		this.config.setKey(UIBuilder_Keys_Title_Size, '24px');
-		this.config.setKey(UIBuilder_Keys_Title_TextColor, 'grey');
-		
-		this.config.setKey(UIBuilder_Keys_Button_Enabled, false);
-		
-		
-		this.history.clear();
-		this.storage.clear();
-		this.animations.clear();
-		console.log(this.animations);
-		this.camera.copy( this.DEFAULT_CAMERA );
-		this.scene.background.setHex( 0xeeeeee );
-		this.setDefaultBackground();
-		this.scene.fog = null;
+        this.config.setKey(UIBuilder_Keys_Banner_Enabled, false);
+        this.config.setKey(UIBuilder_Keys_Banner_Image, '');
+        this.config.setKey(UIBuilder_Keys_Banner_ImageName, '');
+        this.config.setKey(UIBuilder_Keys_Banner_Height, '50px');
+        this.config.setKey(UIBuilder_Keys_Banner_BGColor, 'white');
+        this.config.setKey(UIBuilder_Keys_Logo_Enabled, false);
+        this.config.setKey(UIBuilder_Keys_Logo_Image, '');
+        this.config.setKey(UIBuilder_Keys_Logo_ImageName, '');
+        this.config.setKey(UIBuilder_Keys_Title_Enabled, false);
+        this.config.setKey(UIBuilder_Keys_Title_Text, 'Intelisurf-Builder');
+        this.config.setKey(UIBuilder_Keys_Title_Size, '24px');
+        this.config.setKey(UIBuilder_Keys_Title_TextColor, 'grey');
+        this.config.setKey(UIBuilder_Keys_Button_Enabled, false);
 
-		var objects = this.scene.children;
 
-		while ( objects.length > 0 ) {
+        this.history.clear();
+        this.storage.clear();
+        this.animations.clear();
+        console.log(this.animations);
+        this.camera.copy(this.DEFAULT_CAMERA);
+        this.scene.background.setHex(0xeeeeee);
+        this.setDefaultBackground();
+        this.scene.fog = null;
 
-			this.removeObject( objects[ 0 ] );
+        var objects = this.scene.children;
 
-		}
+        while (objects.length > 0) {
 
-		this.geometries = {};
-		this.materials = {};
-		this.textures = {};
-		this.scripts = {};
-		
+            this.removeObject(objects[0]);
 
-		this.deselect();
-		this.defaultLightSetting();
-		
-		console.log("Editor.js clear added lights");
+        }
 
-		this.signals.editorCleared.dispatch();
-		
-		console.log("Editor.js clear end");
+        this.geometries = {};
+        this.materials = {};
+        this.textures = {};
+        this.scripts = {};
 
-	},
 
-	//
+        this.deselect();
+        this.defaultLightSetting();
 
-	fromJSON: function ( json ) {
+        console.log("Editor.js clear added lights");
 
-		console.log("Editor.js: fromJSON Begin");
-		
-		var loader = new THREE.ObjectLoader();
-		console.log(json);
-		// backwards
+        this.signals.editorCleared.dispatch();
 
-		console.log("Editor.js: fromJSON: Scene");
-		if ( json.scene === undefined ) {
+        console.log("Editor.js clear end");
 
-			this.setScene( loader.parse( json ), json.background );
-			console.log("Editor.js: fromJSON: Scene End");
-			return;
+    },
 
-		}
+    //
 
-		console.log("Editor.js: fromJSON: Camera");
-		var camera = loader.parse( json.camera );
+    fromJSON: function(json) {
 
-		this.camera.copy( camera );
-		this.camera.aspect = this.DEFAULT_CAMERA.aspect;
-		this.camera.updateProjectionMatrix();
+        console.log("Editor.js: fromJSON Begin");
 
-		console.log("Editor.js: fromJSON: History");
-		this.history.fromJSON( json.history );
-		console.log("Editor.js: fromJSON: Scripts");
-		this.scripts = json.scripts;
-		console.log("Editor.js: fromJSON: Animations");
-		this.animations.fromJSON(json.animations);
-		console.log(json.animations);
-		console.log(json.scene);
-		this.setScene( loader.parse( json.scene ), json.background);
-		
-		//console.log("Editor.js: fromJSON: Config: setEnabled: " + json.project.ui.bannerenabled);
-		//this.config.setKey( UIBuilder_Keys_Banner_Enabled, json.project.ui.bannerenabled);
-		//this.config.setKey( UIBuilder_Keys_Banner_Image, json.project.ui.bannerimage);
-		//this.config.setKey('project/vr', json.project.vr);
-		//this.config.setKey('project/title', json.project.title);
-		
-		console.log("Editor.js: fromJSON: End");
-		
-//		project: {
-//			gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
-//			gammaOutput: this.config.getKey( 'project/renderer/gammaOutput' ),
-//			shadows: this.config.getKey( 'project/renderer/shadows' ),
-//			vr: this.config.getKey( 'project/vr' ),
-//			ui: {
-//				bannerenabled: this.config.getKey( 'project/ui/banner/enabled' ),
-//				bannerimage: this.config.getKey( 'project/ui/banner/image' ),
-//			}
-//		},		
-		
-		//this.defaultLightSetting();
-		
-		//console.log(this.animations);
+        var loader = new THREE.ObjectLoader();
+        console.log(json);
+        // backwards
 
-	},
+        console.log("Editor.js: fromJSON: Scene");
+        if (json.scene === undefined) {
 
-	toJSON: function () 
-    {
+            this.setScene(loader.parse(json), json.background);
+            console.log("Editor.js: fromJSON: Scene End");
+            return;
+
+        }
+
+        console.log("Editor.js: fromJSON: Camera");
+        var camera = loader.parse(json.camera);
+
+        this.camera.copy(camera);
+        this.camera.aspect = this.DEFAULT_CAMERA.aspect;
+        this.camera.updateProjectionMatrix();
+
+        console.log("Editor.js: fromJSON: History");
+        this.history.fromJSON(json.history);
+        console.log("Editor.js: fromJSON: Scripts");
+        this.scripts = json.scripts;
+        console.log("Editor.js: fromJSON: Animations");
+        this.animations.fromJSON(json.animations);
+        console.log(json.animations);
+        console.log(json.scene);
+        this.setScene(loader.parse(json.scene), json.background);
+
+        //console.log("Editor.js: fromJSON: Config: setEnabled: " + json.project.ui.bannerenabled);
+        //this.config.setKey( UIBuilder_Keys_Banner_Enabled, json.project.ui.bannerenabled);
+        //this.config.setKey( UIBuilder_Keys_Banner_Image, json.project.ui.bannerimage);
+        //this.config.setKey('project/vr', json.project.vr);
+        //this.config.setKey('project/title', json.project.title);
+
+        console.log("Editor.js: fromJSON: End");
+
+        //		project: {
+        //			gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
+        //			gammaOutput: this.config.getKey( 'project/renderer/gammaOutput' ),
+        //			shadows: this.config.getKey( 'project/renderer/shadows' ),
+        //			vr: this.config.getKey( 'project/vr' ),
+        //			ui: {
+        //				bannerenabled: this.config.getKey( 'project/ui/banner/enabled' ),
+        //				bannerimage: this.config.getKey( 'project/ui/banner/image' ),
+        //			}
+        //		},		
+
+        //this.defaultLightSetting();
+
+        //console.log(this.animations);
+
+    },
+
+    toJSON: function() {
         console.log("Editor.js: toJSON");
 
-		// scripts clean up
+        // scripts clean up
 
-		var scene = this.scene;
-		var scripts = this.scripts;
-		for ( var key in scripts ) {
+        var scene = this.scene;
+        var scripts = this.scripts;
+        for (var key in scripts) {
 
-			var script = scripts[ key ];
+            var script = scripts[key];
 
-			if ( script.length === 0 || scene.getObjectByProperty( 'uuid', key ) === undefined ) {
+            if (script.length === 0 || scene.getObjectByProperty('uuid', key) === undefined) {
 
-				delete scripts[ key ];
+                delete scripts[key];
 
-			}
+            }
 
-		}
+        }
 
-		return {
+        return {
 
-			metadata: {},
-			project: {
-				gammaInput: this.config.getKey( 'project/renderer/gammaInput' ),
-				gammaOutput: this.config.getKey( 'project/renderer/gammaOutput' ),
-				shadows: this.config.getKey( 'project/renderer/shadows' ),
-				vr: this.config.getKey( 'project/vr' ),
-				ui: {
-					bannerenabled: this.config.getKey( UIBuilder_Keys_Banner_Enabled ),
-					bannerimage: this.config.getKey( UIBuilder_Keys_Banner_Image ),
-		        	bannertexturename: this.config.getKey( UIBuilder_Keys_Banner_ImageName ),
-		        	bannerheight: this.config.getKey( UIBuilder_Keys_Banner_Height),
-		        	bannercolor: this.config.getKey( UIBuilder_Keys_Banner_BGColor ),
-		        	logoenabled: this.config.getKey( UIBuilder_Keys_Logo_Enabled ),
-		        	logotexture: this.config.getKey( UIBuilder_Keys_Logo_Image ),
-		        	logotexturename: this.config.getKey( UIBuilder_Keys_Logo_ImageName ),
-		        	titleenabled: this.config.getKey( UIBuilder_Keys_Title_Enabled ),
-		        	titletext: this.config.getKey( UIBuilder_Keys_Title_Text ),
-		        	titlesize: this.config.getKey( UIBuilder_Keys_Title_Size ),
-		        	titlecolor: this.config.getKey( UIBuilder_Keys_Title_TextColor),
-				},
-				title: this.config.getKey( 'project/title' )
-			},
-			camera: this.camera.toJSON(),
-			scene: this.scene.toJSON(),
-			scripts: this.scripts,
-			animations: this.animations.toJSON(),
-			history: [] /*this.history.toJSON()*/, // FIXME: Disabled saving history since it was dropping out somewhere
-			background: getDataURL(scene.background.image),
+            metadata: {},
+            project: {
+                gammaInput: this.config.getKey('project/renderer/gammaInput'),
+                gammaOutput: this.config.getKey('project/renderer/gammaOutput'),
+                shadows: this.config.getKey('project/renderer/shadows'),
+                vr: this.config.getKey('project/vr'),
+                ui: {
+                    bannerenabled: this.config.getKey(UIBuilder_Keys_Banner_Enabled),
+                    bannerimage: this.config.getKey(UIBuilder_Keys_Banner_Image),
+                    bannertexturename: this.config.getKey(UIBuilder_Keys_Banner_ImageName),
+                    bannerheight: this.config.getKey(UIBuilder_Keys_Banner_Height),
+                    bannercolor: this.config.getKey(UIBuilder_Keys_Banner_BGColor),
+                    logoenabled: this.config.getKey(UIBuilder_Keys_Logo_Enabled),
+                    logotexture: this.config.getKey(UIBuilder_Keys_Logo_Image),
+                    logotexturename: this.config.getKey(UIBuilder_Keys_Logo_ImageName),
+                    titleenabled: this.config.getKey(UIBuilder_Keys_Title_Enabled),
+                    titletext: this.config.getKey(UIBuilder_Keys_Title_Text),
+                    titlesize: this.config.getKey(UIBuilder_Keys_Title_Size),
+                    titlecolor: this.config.getKey(UIBuilder_Keys_Title_TextColor),
+                    buttonenabled: this.config.getKey(UIBuilder_Keys_Button_Enabled),
+                },
+                title: this.config.getKey('project/title')
+            },
+            camera: this.camera.toJSON(),
+            scene: this.scene.toJSON(),
+            scripts: this.scripts,
+            animations: this.animations.toJSON(),
+            history: [] /*this.history.toJSON()*/ , // FIXME: Disabled saving history since it was dropping out somewhere
+            background: getDataURL(scene.background.image),
 
-		};
+        };
 
-	},
+    },
 
-	objectByUuid: function ( uuid ) {
+    objectByUuid: function(uuid) {
 
-		return this.scene.getObjectByProperty( 'uuid', uuid, true );
+        return this.scene.getObjectByProperty('uuid', uuid, true);
 
-	},
+    },
 
-	execute: function ( cmd, optionalName ) {
+    execute: function(cmd, optionalName) {
 
-		this.history.execute( cmd, optionalName );
+        this.history.execute(cmd, optionalName);
 
-	},
+    },
 
-	undo: function () {
+    undo: function() {
 
-		this.history.undo();
+        this.history.undo();
 
-	},
+    },
 
-	redo: function () {
+    redo: function() {
 
-		this.history.redo();
+        this.history.redo();
 
-	}
+    }
 };
-function getDataURL( image ) {
 
-	var canvas;
-	
-	if (image === undefined)
-	{
-		return '';
-	}
+function getDataURL(image) {
 
-	if ( image instanceof HTMLCanvasElement ) {
+    var canvas;
 
-		canvas = image;
+    if (image === undefined) {
+        return '';
+    }
 
-	} else {
+    if (image instanceof HTMLCanvasElement) {
 
-		canvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
-		canvas.width = image.width;
-		canvas.height = image.height;
+        canvas = image;
 
-		var context = canvas.getContext( '2d' );
+    } else {
 
-		if ( image instanceof ImageData ) {
+        canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
 
-			context.putImageData( image, 0, 0 );
+        var context = canvas.getContext('2d');
 
-		} else {
+        if (image instanceof ImageData) {
 
-			context.drawImage( image, 0, 0, image.width, image.height );
+            context.putImageData(image, 0, 0);
 
-		}
+        } else {
 
-	}
+            context.drawImage(image, 0, 0, image.width, image.height);
 
-	if ( canvas.width > 2048 || canvas.height > 2048 ) {
+        }
 
-		return canvas.toDataURL( 'image/jpeg', 0.6 );
+    }
 
-	} else {
+    if (canvas.width > 2048 || canvas.height > 2048) {
 
-		return canvas.toDataURL( 'image/png' );
+        return canvas.toDataURL('image/jpeg', 0.6);
 
-	}
+    } else {
+
+        return canvas.toDataURL('image/png');
+
+    }
 
 }
