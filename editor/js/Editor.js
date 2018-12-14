@@ -628,7 +628,7 @@ Editor.prototype = {
     },
 
     clear: function() {
-        console.log("Editor.js clear begin");
+        console.log("Editor.js clear begin ***********************************");
 
         this.config.setKey(UIBuilder_Keys_Banner_Enabled, false);
         this.config.setKey(UIBuilder_Keys_Banner_Image, '');
@@ -644,6 +644,13 @@ Editor.prototype = {
         this.config.setKey(UIBuilder_Keys_Title_TextColor, 'grey');
         this.config.setKey(UIBuilder_Keys_Button_Enabled, false);
 
+        uiplaybutton.hidden = true;
+        uiplaybutton.dom.hidden = true;
+        uibanner.dom.hidden = true;
+        uilogo.dom.hidden = true;
+        uititle.dom.style.color = '#00000000';
+
+        console.log(uiplaybutton);
 
         this.history.clear();
         this.storage.clear();
